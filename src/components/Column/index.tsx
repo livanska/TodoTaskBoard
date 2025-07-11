@@ -7,15 +7,11 @@ const Root = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: ${COLORS.white};
+    background-color: ${COLORS.background};
 `;
 
-const Board: React.FC = () => {
-    return (
-        <Root>
-            <h1>To-Do Board</h1>
-        </Root>
-    );
+const Column: React.FC = () => {
+    return <Root></Root>;
 };
 
-export default Board;
+export default Column;
