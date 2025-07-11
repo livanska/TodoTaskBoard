@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../../styles/colors";
+import Column from "../Column";
 
 const Root = styled.div`
     display: flex;
@@ -13,7 +14,7 @@ const Root = styled.div`
 const Board: React.FC = () => {
     return (
         <Root>
-            <h1>To-Do Board</h1>
+            <Column />
         </Root>
     );
 };

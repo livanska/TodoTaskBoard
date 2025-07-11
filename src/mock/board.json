@@ -1,0 +1,65 @@
+{
+    "name": "Liliia's Board",
+    "columns": [
+        {
+            "id": 1,
+            "title": "Liliia",
+            "tasks": [
+                {
+                    "id": 1,
+                    "name": "Implement drag and drop feature",
+                    "order": 1,
+                    "isComplete": true
+                },
+                {
+                    "id": 2,
+                    "name": "Add user authentication",
+                    "order": 2,
+                    "isComplete": false
+                },
+                {
+                    "id": 3,
+                    "name": "Optimize card rendering",
+                    "order": 3,
+                    "isComplete": false
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Mariia",
+            "tasks": [
+                {
+                    "id": 1,
+                    "name": "Add card creation functionality",
+                    "order": 1,
+                    "isComplete": false
+                },
+                {
+                    "id": 2,
+                    "name": "Implement card editing",
+                    "order": 2,
+                    "isComplete": false
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Pavlo",
+            "tasks": [
+                {
+                    "id": 1,
+                    "name": "Add column creation functionality",
+                    "order": 1,
+                    "isComplete": false
+                },
+                {
+                    "id": 2,
+                    "name": "Implement column reordering",
+                    "order": 2,
+                    "isComplete": false
+                }
+            ]
+        }
+    ]
+}
