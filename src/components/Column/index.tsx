@@ -6,6 +6,8 @@ import { selectTasksByColumnId } from "../../redux/tasks/selectors";
 import { addTask } from "../../redux/tasks/reducer";
 import SPACINGS from "../../styles/spacings";
 import { ColumnStoreType } from "../../redux/types";
+import Button from "../Button";
+import Task from "../Task";
 
 const Root = styled.div`
     display: flex;
@@ -13,8 +15,11 @@ const Root = styled.div`
     align-items: start;
     flex-direction: column;
     background-color: ${COLORS.background};
+    border: 1px solid ${COLORS.border};
+    border-radius: ${SPACINGS.xs};
     min-width: 15rem;
     gap: ${SPACINGS.xs};
+    padding: ${SPACINGS.xs};
 `;
 
 const Column: React.FC<ColumnStoreType> = ({ id, title }) => {
@@ -23,17 +28,16 @@ const Column: React.FC<ColumnStoreType> = ({ id, title }) => {
 
     return (
         <Root>
-            {tasks.map(({ name, id }) => (
-                <div key={id + name}>{name}</div>
+            {title}
+            {tasks.map((props) => (
+                <Task {...props} />
             ))}
-            <button
-                style={{ width: 100 }}
+            <Button
+                title="Add new task"
                 onClick={() => {
-                    dispatch(addTask());
+                    dispatch(addTask({ columnId: id, name: "New task" }));
                 }}
-            >
-                Add task
-            </button>
+            />
         </Root>
     );
 };

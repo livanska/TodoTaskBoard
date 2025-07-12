@@ -10,3 +10,5 @@ export type TaskStoreType = Task & {
 };
 
 export type ColumnStoreType = Omit<Column, "tasks">;
+
+export type TaskCreatePayload = Pick<TaskStoreType, "name" | "columnId">;
