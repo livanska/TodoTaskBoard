@@ -3,6 +3,7 @@ const COLORS = {
     black: "#000000",
 
     background: "#F6FAFF",
+    border: "#E7F2FF",
     card: "#FFF8DA",
     cardDone: "#DAFDD3",
 

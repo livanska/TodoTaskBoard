@@ -6,7 +6,9 @@ export const convertToStoreType = (board: Board): RootState => {
     console.log(board);
 
     const columns = board?.columns?.map(({ id, title, tasks }) => {
-        allTasks.push(...tasks.map((task) => ({ ...task, columnId: id })));
+        allTasks.push(
+            ...tasks.map((task) => ({ ...task, columnId: id, id: task.id }))
+        );
         return { id, title };
     });
 
@@ -16,7 +18,7 @@ export const convertToStoreType = (board: Board): RootState => {
 };
 
 export const convertFromStoreType = (state: RootState) => {
-    const groupedTasks = state.tasks.reduce<Record<number, Task[]>>(
+    const groupedTasks = state.tasks.reduce<Record<string, Task[]>>(
         (acc, { columnId, ...task }) => {
             acc[columnId] = [...(acc[columnId] ?? []), task];
             return acc;

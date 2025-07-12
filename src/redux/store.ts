@@ -12,11 +12,11 @@ import {
 } from "../utils/convertBoardData";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { AppDispatch, RootState, AppStore } from "./types";
-import mockedData from "../mock/board.json";
+import { getMockedData } from "../mock/getMockedData";
 
-const preloadedState = existInLocalStorage()
-    ? convertToStoreType(loadLocalState())
-    : convertToStoreType(mockedData);
+const preloadedState = convertToStoreType(
+    existInLocalStorage() ? loadLocalState() : getMockedData()
+);
 
 export const rootReducer = combineReducers({
     columns: columnsReducer,
@@ -25,7 +25,7 @@ export const rootReducer = combineReducers({
 
 export const store = configureStore({
     reducer: rootReducer,
-    preloadedState, // Load state from LocalStorage
+    preloadedState,
 });
 
 // Save to localStorage every time the state changes

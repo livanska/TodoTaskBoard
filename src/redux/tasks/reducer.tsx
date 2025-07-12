@@ -9,8 +9,8 @@ const tasksSlice = createSlice({
     reducers: {
         addTask: (state) => {
             state.push({
-                columnId: 1,
-                id: state.length + 1,
+                columnId: "s",
+                id: "a",
                 name: "task 2",
                 isComplete: false,
                 order: 0,

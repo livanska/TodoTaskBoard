@@ -6,7 +6,7 @@ export type AppDispatch = AppStore["dispatch"];
 export type RootState = ReturnType<typeof rootReducer>;
 
 export type TaskStoreType = Task & {
-    columnId: number;
+    columnId: string;
 };
 
 export type ColumnStoreType = Omit<Column, "tasks">;

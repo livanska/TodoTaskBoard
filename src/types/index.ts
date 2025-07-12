@@ -1,12 +1,12 @@
 export type Task = {
-    id: number;
+    id: string;
     name: string;
     order: number;
     isComplete: boolean;
 };
 
 export type Column = {
-    id: number;
+    id: string;
     title: string;
     tasks: Task[];
 };
