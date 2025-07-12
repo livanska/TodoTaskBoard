@@ -1,4 +1,5 @@
 const SPACINGS = {
+    xxxs: "0.125rem",
     xxs: "0.25rem",
     xs: "0.5rem",
     sm: "1rem",

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import COLORS from "../../styles/colors";
+import COLORS, { GLASS_EFFECT } from "../../styles/colors";
 import Column from "../Column";
 import SPACINGS from "../../styles/spacings";
 import { useAppSelector } from "../../redux/store";
@@ -13,25 +13,20 @@ const Root = styled.div`
     background-color: ${COLORS.white};
     padding: ${SPACINGS.xs};
     background: ${COLORS.backgroundGradient};
-    box-sizing: border-box;
+    padding: ${SPACINGS.xs};
 `;
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    width: calc(100% - ${SPACINGS.md});
-    height: calc(100% - ${SPACINGS.md});
-    border: 1px solid ${COLORS.border};
+    width: 100%;
+    height: 100%;
     border-radius: ${SPACINGS.sm};
-    padding: ${SPACINGS.sm};
+    padding: ${SPACINGS.xs};
     overflow: hidden;
-
-    backdrop-filter: blur(6px) saturate(103%);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    -webkit-backdrop-filter: blur(6px) saturate(103%);
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 12px;
-    border: 1px solid rgba(209, 213, 219, 0.3);
+    border-radius: ${SPACINGS.sm};
+    border: 1px solid ${COLORS.border};
+    ${GLASS_EFFECT};
 `;
 
 const ContentWrapper = styled.div`
@@ -40,6 +35,7 @@ const ContentWrapper = styled.div`
     gap: ${SPACINGS.sm};
     width: 100%;
     height: 100%;
+    overflow-y: hidden;
 `;
 
 const Board: React.FC = () => {
@@ -50,8 +46,8 @@ const Board: React.FC = () => {
             <Wrapper>
                 <Header />
                 <ContentWrapper>
-                    {columns.map((props) => (
-                        <Column {...props} key={props.id + props.title} />
+                    {columns?.map((props) => (
+                        <Column {...props} key={props.id} />
                     ))}
                 </ContentWrapper>
             </Wrapper>

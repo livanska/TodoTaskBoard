@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { ColumnStoreType, RootState } from "../types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ColumnCreatePayload, ColumnStoreType, RootState } from "../types";
+import { getUuid } from "../../utils/getUuid";
 
 const initialState: ColumnStoreType[] = [];
 
@@ -7,11 +8,21 @@ const columnsSlice = createSlice({
     name: "columns",
     initialState,
     reducers: {
-        addColumn: (state, action) => {},
+        addColumn: (state, action: PayloadAction<ColumnCreatePayload>) => {
+            const { title } = action.payload;
+            state.push({
+                id: getUuid(),
+                title,
+            });
+        },
+        deleteColumn: (state, action: PayloadAction<string>) => {
+            const columnId = action.payload;
+            return state.filter(({ id }) => id !== columnId);
+        },
     },
 });
 
-export const { addColumn } = columnsSlice.actions;
+export const { addColumn, deleteColumn } = columnsSlice.actions;
 
 export const columnsSelector = (state: RootState) => state.columns;
 

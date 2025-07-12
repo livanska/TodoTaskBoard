@@ -18,16 +18,16 @@ const tasksSlice = createSlice({
                 order: 0,
             });
         },
-        toggleTaskComplete: (state, action) => {
+        toggleTaskComplete: (state, action: PayloadAction<string>) => {
             const taskId = action.payload;
             const task = state.find((task) => task.id === taskId);
             if (task) {
                 task.isComplete = !task.isComplete;
             }
         },
-        deleteTask: (state, action) => {
+        deleteTask: (state, action: PayloadAction<string>) => {
             const taskId = action.payload;
-            state = state.filter((task) => task.id !== taskId);
+            return state.filter((task) => task.id !== taskId);
         },
     },
 });
