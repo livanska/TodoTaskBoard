@@ -1,26 +1,10 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Modal from "../Modal";
 import { styled } from "styled-components";
-import COLORS from "../../styles/colors";
-import SPACINGS from "../../styles/spacings";
 import useModal from "../../hooks/useModal";
-
-type Props = {
-    title?: string;
-    onActionClick: (name: string) => void;
-};
-
-const formId = "new-entity-modal";
-const nameField = "name";
-
-const TextArea = styled.textarea`
-    width: 100%;
-    height: 100%;
-    resize: none;
-    border: 1px solid ${COLORS.border};
-    border-radius: ${SPACINGS.xxs};
-    padding: ${SPACINGS.xs};
-`;
+import TaskBodyContent from "./TaskBodyContent";
+import { COLUMN_FIELD, FORM_ID, NAME_FIELD } from "./constants";
+import { ModalProps } from "../Modal/types";
 
 const Form = styled.form`
     display: flex;
@@ -29,29 +13,25 @@ const Form = styled.form`
     width: 100%;
 `;
 
-const Label = styled.div`
-    color: ${COLORS.font};
-`;
+const EntityModal = <T,>({ onActionClick, title, initial }: ModalProps<T>) => {
+    const { closeModal } = useModal<ModalProps<T>>();
 
-const EntityModal: React.FC<Props> = ({ onActionClick, ...props }) => {
-    const {
-        closeModal,
-        modalProps: { initial },
-    } = useModal();
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const name = formData.get(nameField) as string;
-        onActionClick(name);
-        closeModal();
-    };
+    const handleSubmit = useCallback(
+        (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const name = formData.get(NAME_FIELD) as string;
+            const columnId = formData.get(COLUMN_FIELD) as string;
+            onActionClick?.({ name, columnId } as T);
+            closeModal();
+        },
+        [closeModal, onActionClick]
+    );
 
     return (
-        <Modal title="jnjnjn" formId={formId} {...props}>
-            <Form onSubmit={handleSubmit} id={formId}>
-                <Label>Task title:</Label>
-                <TextArea defaultValue={initial} name={nameField} />
+        <Modal title={title} formId={FORM_ID}>
+            <Form onSubmit={handleSubmit} id={FORM_ID}>
+                <TaskBodyContent initial={initial} />
             </Form>
         </Modal>
     );

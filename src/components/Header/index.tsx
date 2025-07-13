@@ -3,9 +3,10 @@ import styled from "styled-components";
 import Button from "../Button";
 import { useAppDispatch } from "../../redux/store";
 import { addColumn } from "../../redux/columns/reducer";
-import {} from "react-icons";
 import useModal from "../../hooks/useModal";
 import EntityModal from "../EntityModal";
+import { addTask } from "../../redux/tasks/reducer";
+import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
 
 const Root = styled.div`
     height: 10rem;
@@ -17,11 +18,17 @@ const Wrapper = styled.div``;
 
 const Header: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { openModal } = useModal();
+    const { openModal, modalProps } = useModal<
+        TaskCreatePayload | ColumnCreatePayload
+    >();
 
-    const handleAddColumn = useCallback(
-        (name: string) => dispatch(addColumn({ title: name })),
-        [dispatch]
+    const handleAddAction = useCallback(
+        (payload: TaskCreatePayload | ColumnCreatePayload) => {
+            if (modalProps.entity === "task")
+                dispatch(addTask(payload as TaskCreatePayload));
+            else dispatch(addColumn(payload as ColumnCreatePayload));
+        },
+        [dispatch, modalProps.entity]
     );
 
     return (
@@ -30,14 +37,26 @@ const Header: React.FC = () => {
                 Table header
                 <Button
                     title="New task"
-                    onClick={() => openModal({ entity: "task" })}
+                    onClick={() =>
+                        openModal({
+                            title: "New task",
+                            entity: "task",
+                            initial: "New task",
+                            onActionClick: handleAddAction,
+                        })
+                    }
                 />
                 <Button
                     title="New column"
-                    onClick={() => openModal({ entity: "column" })}
+                    onClick={() =>
+                        openModal({
+                            entity: "column",
+                            onActionClick: handleAddAction,
+                        })
+                    }
                 />
             </Wrapper>
-            <EntityModal onActionClick={handleAddColumn} />
+            <EntityModal {...modalProps} />
         </Root>
     );
 };

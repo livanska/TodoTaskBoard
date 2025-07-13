@@ -1,15 +1,12 @@
 import { useCallback, useState } from "react";
 import { setIsModalOpen } from "../redux/settings/reducer";
 import { useAppDispatch } from "../redux/store";
-import { EntityType } from "../types";
+import { ModalProps } from "../components/Modal/types";
 
-type Props = {
-    entity: EntityType;
-    id?: string;
-    initial?: string;
-};
-const useModal = () => {
-    const [modalProps, setModalProps] = useState<Props>({ entity: "board" });
+const useModal = <T,>() => {
+    const [modalProps, setModalProps] = useState<ModalProps<T>>({
+        entity: "board",
+    });
     const dispatch = useAppDispatch();
 
     const handleIsOpen = useCallback(
@@ -17,10 +14,13 @@ const useModal = () => {
         [dispatch]
     );
 
-    const openModal = (props?: Props) => {
-        props?.entity && setModalProps(props);
-        handleIsOpen(true);
-    };
+    const openModal = useCallback(
+        (props?: ModalProps<T>) => {
+            props?.entity && setModalProps(props);
+            handleIsOpen(true);
+        },
+        [handleIsOpen]
+    );
     const closeModal = () => handleIsOpen(false);
 
     return { openModal, closeModal, handleIsOpen, modalProps };

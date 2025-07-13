@@ -12,8 +12,7 @@ import Button from "../Button";
 
 type Props = {
     children?: React.ReactNode;
-    title: string;
-    onActionClick?: () => void;
+    title?: string;
     formId?: string;
 };
 
@@ -74,8 +73,7 @@ const Content = styled.div`
 
 const Modal: React.FC<Props> = ({
     children,
-    onActionClick = () => {},
-    title,
+    title = "Modal title",
     formId,
 }) => {
     const isModalOpen = useAppSelector(isModalOpenSelector);
