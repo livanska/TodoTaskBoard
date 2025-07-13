@@ -32,7 +32,8 @@ const tasksSlice = createSlice({
     },
 });
 
-export const { addTask, toggleTaskComplete, deleteTask } = tasksSlice.actions;
+export const tasksActions = tasksSlice.actions;
+export const { addTask, toggleTaskComplete, deleteTask } = tasksActions;
 
 export const tasksSelector = (state: RootState) => state.tasks;
 

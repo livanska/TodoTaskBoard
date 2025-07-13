@@ -22,7 +22,8 @@ const columnsSlice = createSlice({
     },
 });
 
-export const { addColumn, deleteColumn } = columnsSlice.actions;
+export const columnsActions = columnsSlice.actions;
+export const { addColumn, deleteColumn } = columnsActions;
 
 export const columnsSelector = (state: RootState) => state.columns;
 

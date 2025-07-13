@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { tasksSelector } from "./reducer";
 
-export const selectTasksByColumnId = (columnId: string) =>
+export const tasksByColumnIdSelector = (columnId: string) =>
     createSelector([tasksSelector], (tasks) =>
         tasks.filter((task) => task.columnId === columnId)
     );

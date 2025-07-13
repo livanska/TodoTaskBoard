@@ -1,7 +1,9 @@
 import { RootState, TaskStoreType } from "../redux/types";
 import { Board, Task } from "../types";
 
-export const convertToStoreType = (board: Board): RootState => {
+export const convertToStoreType = (
+    board: Board
+): Omit<RootState, "settings"> => {
     let allTasks: TaskStoreType[] = [];
     console.log(board);
 
@@ -17,7 +19,7 @@ export const convertToStoreType = (board: Board): RootState => {
     return { columns, tasks: allTasks };
 };
 
-export const convertFromStoreType = (state: RootState) => {
+export const convertFromStoreType = (state: Omit<RootState, "settings">) => {
     const groupedTasks = state.tasks.reduce<Record<string, Task[]>>(
         (acc, { columnId, ...task }) => {
             acc[columnId] = [...(acc[columnId] ?? []), task];

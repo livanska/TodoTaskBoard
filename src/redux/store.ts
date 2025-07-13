@@ -1,6 +1,12 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import tasksReducer from "./tasks/reducer";
-import columnsReducer from "./columns/reducer";
+import {
+    combineReducers,
+    configureStore,
+    createListenerMiddleware,
+    isAnyOf,
+} from "@reduxjs/toolkit";
+import tasksReducer, { tasksActions } from "./tasks/reducer";
+import columnsReducer, { columnsActions } from "./columns/reducer";
+import settingsReducer from "./settings/reducer";
 import {
     existInLocalStorage,
     loadLocalState,
@@ -19,18 +25,35 @@ const preloadedState = convertToStoreType(
 );
 
 export const rootReducer = combineReducers({
+    settings: settingsReducer,
     columns: columnsReducer,
     tasks: tasksReducer,
+});
+
+const listener = createListenerMiddleware();
+const matchingActions = [
+    ...(Object.values(tasksActions) as Array<
+        (typeof tasksActions)[keyof typeof tasksActions]
+    >),
+    ...(Object.values(columnsActions) as Array<
+        (typeof columnsActions)[keyof typeof columnsActions]
+    >),
+];
+
+listener.startListening({
+    matcher: isAnyOf(...matchingActions),
+    effect: async (_, listenerApi) => {
+        saveToLocalState(
+            convertFromStoreType(listenerApi.getState() as RootState)
+        );
+    },
 });
 
 export const store = configureStore({
     reducer: rootReducer,
     preloadedState,
-});
-
-// Save to localStorage every time the state changes
-store.subscribe(() => {
-    saveToLocalState(convertFromStoreType(store.getState()));
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().prepend(listener.middleware),
 });
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();

@@ -8,8 +8,12 @@ export type RootState = ReturnType<typeof rootReducer>;
 export type TaskStoreType = Task & {
     columnId: string;
 };
-
 export type ColumnStoreType = Omit<Column, "tasks">;
 
 export type TaskCreatePayload = Pick<TaskStoreType, "name" | "columnId">;
 export type ColumnCreatePayload = Pick<ColumnStoreType, "title">;
+
+export type SettingsStoreType = {
+    name?: string;
+    isModalOpen: boolean;
+};

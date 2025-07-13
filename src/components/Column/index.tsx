@@ -2,12 +2,13 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 import COLORS from "../../styles/colors";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { selectTasksByColumnId } from "../../redux/tasks/selectors";
+import { tasksByColumnIdSelector } from "../../redux/tasks/selectors";
 import { addTask } from "../../redux/tasks/reducer";
 import SPACINGS from "../../styles/spacings";
 import { ColumnStoreType } from "../../redux/types";
 import Task from "../Task";
 import Icon from "../Icon";
+import { deleteColumn } from "../../redux/columns/reducer";
 
 const Root = styled.div`
     display: flex;
@@ -18,6 +19,8 @@ const Root = styled.div`
     border: 1px solid ${COLORS.border};
     border-radius: ${SPACINGS.xs};
     min-width: 15rem;
+    max-width: 20rem;
+    width: 100%;
     overflow: hidden;
 `;
 
@@ -28,6 +31,7 @@ const List = styled.div`
     padding: ${SPACINGS.sm};
     overflow-y: scroll;
     height: 100%;
+    width: 100%;
 `;
 
 const Title = styled.div`
@@ -42,20 +46,18 @@ const Header = styled.div`
     font-weight: bold;
     display: flex;
     width: 100%;
-    justify-content: flex-end;
-    padding-left: ${SPACINGS.md};
-`;
-
-const IconWrapper = styled.div`
-    display: flex;
-    justify-content: flex-end;
+    justify-content: space-around;
     align-self: center;
-    justify-self: end;
 `;
 
 const Column: React.FC<ColumnStoreType> = ({ id, title }) => {
-    const tasks = useAppSelector(selectTasksByColumnId(id));
+    const tasks = useAppSelector(tasksByColumnIdSelector(id));
     const dispatch = useAppDispatch();
+
+    const handleDeleteColumn = useCallback(
+        () => dispatch(deleteColumn(id)),
+        [dispatch, id]
+    );
 
     const handleAddTask = useCallback(
         () => dispatch(addTask({ columnId: id, name: "New task" })),
@@ -65,10 +67,9 @@ const Column: React.FC<ColumnStoreType> = ({ id, title }) => {
     return (
         <Root>
             <Header>
+                <Icon name="add" onClick={handleAddTask} />
                 <Title>{title}</Title>
-                <IconWrapper>
-                    <Icon name="add" onClick={handleAddTask} />
-                </IconWrapper>
+                <Icon name="delete" onClick={handleDeleteColumn} />
             </Header>
             <List>
                 {tasks?.map((props) => (

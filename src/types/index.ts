@@ -15,3 +15,5 @@ export type Board = {
     name?: string;
     columns: Column[];
 };
+
+export type EntityType = "task" | "column" | "board";
