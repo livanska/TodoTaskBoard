@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import COLORS, { GLASS_EFFECT } from "../../styles/colors";
-import { TaskStoreType } from "../../redux/types";
+import { TaskEditPayload, TaskStoreType } from "../../redux/types";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { deleteTask, toggleTaskComplete } from "../../redux/tasks/reducer";
 import Icon from "../Icon";
@@ -10,7 +10,7 @@ import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { TaskDraggable } from "../../types";
 import {
     isSelectedIdSelector,
-    isSelectModeSelector,
+    selectModeSelector,
 } from "../../redux/settings/selectors";
 import { setSelectedIds } from "../../redux/settings/reducer";
 
@@ -87,16 +87,21 @@ const IconWrapper = styled.div`
     color: ${COLORS.subtitle};
 `;
 
-const Task: React.FC<TaskStoreType> = ({
+type Props = {
+    onEdit: (id: TaskEditPayload) => void;
+} & TaskStoreType;
+
+const Task: React.FC<Props> = ({
     id,
     columnId,
     isComplete,
     name,
     order,
+    onEdit,
 }) => {
     const taskRef = useRef<HTMLDivElement>(null);
     const dispatch = useAppDispatch();
-    const isSelectMode = useAppSelector(isSelectModeSelector);
+    const { isSelectMode } = useAppSelector(selectModeSelector);
     const isSelected = useAppSelector(isSelectedIdSelector(id));
 
     const handleStatusChange = useCallback(
@@ -131,6 +136,11 @@ const Task: React.FC<TaskStoreType> = ({
         });
     }, [id, columnId, order, isSelectMode]);
 
+    const handleEdit = useCallback(
+        () => onEdit({ id, columnId, isComplete, name }),
+        [onEdit, id, columnId, isComplete, name]
+    );
+
     return (
         <Root
             ref={taskRef}
@@ -140,12 +150,12 @@ const Task: React.FC<TaskStoreType> = ({
         >
             <Wrapper isComplete={isComplete} isSelectMode={isSelectMode}>
                 <Header>
-                    <StatusLabel isComplete={isComplete}>
+                    <StatusLabel isComplete={!!isComplete}>
                         <Icon name={isComplete ? "done" : "notDone"} />
                         {isComplete ? "Done" : "Not done"}
                     </StatusLabel>
                     <ActionsRow>
-                        <Icon name="edit" onClick={() => {}} />
+                        <Icon name="edit" onClick={handleEdit} />
                         <Icon
                             name={!isComplete ? "done" : "notDone"}
                             onClick={handleStatusChange}

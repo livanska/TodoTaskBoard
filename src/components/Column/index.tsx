@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 import COLORS from "../../styles/colors";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { tasksByColumnIdSelector } from "../../redux/tasks/selectors";
-import { addTask, moveTask } from "../../redux/tasks/reducer";
+import { addTask, editTask, moveTask } from "../../redux/tasks/reducer";
 import SPACINGS from "../../styles/spacings";
-import { ColumnStoreType } from "../../redux/types";
+import { ColumnStoreType, TaskEditPayload } from "../../redux/types";
 import Task from "../Task";
 import Icon from "../Icon";
 import { deleteColumn } from "../../redux/columns/reducer";
@@ -14,8 +14,14 @@ import {
     dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { ColumnDraggable, TaskDraggable } from "../../types";
-import { isSelectModeSelector } from "../../redux/settings/selectors";
+import {
+    filtersSelector,
+    searchSelector,
+    selectModeSelector,
+} from "../../redux/settings/selectors";
 import { setSelectedIds } from "../../redux/settings/reducer";
+import { ModalEntityProps } from "../EntityModal/types";
+import { matchSearch } from "../../utils/searchText";
 
 const Root = styled.div`
     display: flex;
@@ -73,10 +79,17 @@ const DragIconWrapper = styled.div<{ isSelectMode?: boolean }>`
     ${({ isSelectMode }) => isSelectMode && `visibility: hidden;`}
 `;
 
-const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
-    const tasks = useAppSelector(tasksByColumnIdSelector(id));
-    const isSelectMode = useAppSelector(isSelectModeSelector);
+type Props = {
+    openModal: (props: ModalEntityProps) => void;
+} & ColumnStoreType;
 
+const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
+    const filters = useAppSelector(filtersSelector);
+    const search = useAppSelector(searchSelector);
+    const tasks = useAppSelector(tasksByColumnIdSelector(id));
+    const { isSelectMode } = useAppSelector(selectModeSelector);
+
+    console.log(tasks);
     const dispatch = useAppDispatch();
 
     const handleDeleteColumn = useCallback(
@@ -85,11 +98,17 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
     );
 
     const handleAddTask = useCallback(
-        () => dispatch(addTask({ columnId: id, name: "New task" })),
+        () =>
+            dispatch(
+                addTask({
+                    columnId: id,
+                    name: "New task",
+                })
+            ),
         [dispatch, id]
     );
 
-    const handleTskSelections = useCallback(
+    const handleTaskSelections = useCallback(
         (isSelected: boolean) =>
             dispatch(
                 setSelectedIds({
@@ -104,7 +123,7 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
     const columnIconRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!columnRef.current || !isSelectMode) return;
+        if (!columnRef.current || isSelectMode) return;
 
         return dropTargetForElements({
             element: columnRef.current,
@@ -149,7 +168,7 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
     }, [dispatch, id, isSelectMode]);
 
     useEffect(() => {
-        if (!columnRef.current || !isSelectMode) return;
+        if (!columnRef.current || isSelectMode) return;
 
         return draggable({
             element: columnRef.current,
@@ -162,6 +181,30 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
                 } as ColumnDraggable),
         });
     }, [id, isSelectMode, order]);
+
+    const filteredTasks = useMemo(() => {
+        if (filters?.done && filters?.unDone && !search) return tasks;
+        return tasks.filter(({ isComplete, name }) => {
+            const statusMatch =
+                (filters?.done && isComplete) ||
+                (filters?.unDone && !isComplete);
+            if (search) return statusMatch && matchSearch(name, search);
+            return statusMatch;
+        });
+    }, [filters, tasks, search]);
+
+    const handleTaskEdit = useCallback(
+        (task: TaskEditPayload) => {
+            openModal({
+                entity: "task",
+                initial: task,
+                onActionClick: (props) =>
+                    dispatch(editTask(props as TaskEditPayload)),
+                title: "Update task",
+            });
+        },
+        [dispatch, openModal]
+    );
 
     return (
         <Root ref={columnRef} data-column-id={id}>
@@ -179,7 +222,7 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
                         onClick={
                             !isSelectMode
                                 ? handleAddTask
-                                : () => handleTskSelections(true)
+                                : () => handleTaskSelections(true)
                         }
                     />
                     <Icon
@@ -187,14 +230,14 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
                         onClick={
                             !isSelectMode
                                 ? handleDeleteColumn
-                                : () => handleTskSelections(false)
+                                : () => handleTaskSelections(false)
                         }
                     />
                 </Row>
             </Header>
             <List>
-                {tasks?.map((props) => (
-                    <Task {...props} key={props.id} />
+                {filteredTasks?.map((props) => (
+                    <Task {...props} key={props.id} onEdit={handleTaskEdit} />
                 ))}
             </List>
         </Root>

@@ -1,10 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState, SetSelectedIdsPayload, SettingsStoreType } from "../types";
+import {
+    FiltersPayload,
+    RootState,
+    SetSelectedIdsPayload,
+    SettingsStoreType,
+} from "../types";
 
 const initialState: SettingsStoreType = {
     isModalOpen: false,
     isSelectMode: false,
     selectedIds: [],
+    filters: { done: true, unDone: true },
 };
 
 const settingsSlice = createSlice({
@@ -16,6 +22,7 @@ const settingsSlice = createSlice({
         },
         setSelectMode: (state, action: PayloadAction<boolean>) => {
             state.isSelectMode = action.payload;
+            state.selectedIds = [];
         },
         setSelectedIds: (
             state,
@@ -31,6 +38,12 @@ const settingsSlice = createSlice({
         resetSelectedIds: (state) => {
             state.selectedIds = [];
         },
+        setSearch: (state, action: PayloadAction<string>) => {
+            state.search = action.payload;
+        },
+        setFilters: (state, action: PayloadAction<FiltersPayload>) => {
+            state.filters = action.payload;
+        },
     },
 });
 
@@ -39,6 +52,8 @@ export const {
     setSelectMode,
     setSelectedIds,
     resetSelectedIds,
+    setSearch,
+    setFilters,
 } = settingsSlice.actions;
 
 export const settingsSelector = (state: RootState) => state.settings;

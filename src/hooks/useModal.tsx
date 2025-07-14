@@ -1,29 +1,43 @@
 import { useCallback, useState } from "react";
 import { setIsModalOpen } from "../redux/settings/reducer";
-import { useAppDispatch } from "../redux/store";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import { ModalProps } from "../components/Modal/types";
+import { isModalOpenSelector } from "../redux/settings/selectors";
 
-const useModal = <T,>() => {
+type ModalReturnProps<T> = {
+    isOpen: boolean;
+    modalProps: ModalProps<T>;
+    openModal: (props: ModalProps<T>) => void;
+    closeModal: () => void;
+};
+
+const useModal = <T,>(): ModalReturnProps<T> => {
+    const dispatch = useAppDispatch();
+    const isModalOpenFromStore = useAppSelector(isModalOpenSelector);
+
     const [modalProps, setModalProps] = useState<ModalProps<T>>({
         entity: "board",
     });
-    const dispatch = useAppDispatch();
 
-    const handleIsOpen = useCallback(
-        (isOpen: boolean) => dispatch(setIsModalOpen(isOpen)),
+    const openModal = useCallback(
+        (props: ModalProps<T>) => {
+            setModalProps(props);
+            dispatch(setIsModalOpen(true));
+        },
         [dispatch]
     );
 
-    const openModal = useCallback(
-        (props?: ModalProps<T>) => {
-            props?.entity && setModalProps(props);
-            handleIsOpen(true);
-        },
-        [handleIsOpen]
-    );
-    const closeModal = () => handleIsOpen(false);
+    const closeModal = useCallback(() => {
+        setModalProps({ entity: "board" });
+        dispatch(setIsModalOpen(false));
+    }, [dispatch]);
 
-    return { openModal, closeModal, handleIsOpen, modalProps };
+    return {
+        isOpen: isModalOpenFromStore,
+        modalProps,
+        openModal,
+        closeModal,
+    };
 };
 
 export default useModal;

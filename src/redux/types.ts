@@ -10,7 +10,15 @@ export type TaskStoreType = Task & {
 };
 export type ColumnStoreType = Omit<Column, "tasks">;
 
-export type TaskCreatePayload = Pick<TaskStoreType, "name" | "columnId">;
+export type TaskCreatePayload = Omit<TaskStoreType, "order" | "id">;
+
+export type TaskEditPayload = Omit<TaskStoreType, "order">;
+
+export type TasksCompletePayload = {
+    ids: string[];
+    isComplete: boolean;
+};
+
 export type ColumnCreatePayload = Pick<ColumnStoreType, "title">;
 
 export type TaskMovePayload = Pick<
@@ -19,6 +27,12 @@ export type TaskMovePayload = Pick<
 > & {
     newColumnId: string;
     newOrder: number;
+};
+
+export type TasksMovePayload = {
+    ids?: string[];
+    columnId: string;
+    isComplete?: boolean;
 };
 
 export type ColumnMovePayload = Pick<ColumnStoreType, "id" | "order"> & {
@@ -30,9 +44,16 @@ export type SetSelectedIdsPayload = {
     isSelected: boolean;
 };
 
+export type FiltersPayload = {
+    done?: boolean;
+    unDone?: boolean;
+};
+
 export type SettingsStoreType = {
     name?: string;
     isSelectMode?: boolean;
     isModalOpen: boolean;
     selectedIds?: string[];
+    search?: string;
+    filters?: FiltersPayload;
 };

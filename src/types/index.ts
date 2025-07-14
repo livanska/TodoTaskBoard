@@ -2,7 +2,7 @@ export type Task = {
     id: string;
     name: string;
     order: number;
-    isComplete: boolean;
+    isComplete?: boolean;
 };
 
 export type Column = {

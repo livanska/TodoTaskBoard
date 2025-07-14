@@ -10,11 +10,10 @@ const InputRoot = styled.input`
     height: 100%;
     resize: none;
     border: 1px solid ${COLORS.border};
-    border-radius: ${SPACINGS.xxs};
     padding: ${SPACINGS.xs};
     text-align: left;
     background: white;
-    border-radius: ${SPACINGS.xxs};
+    border-radius: ${SPACINGS.xs};
     color: ${COLORS.font};
 `;
 

@@ -4,11 +4,16 @@ import { RootState } from "../types";
 export const isModalOpenSelector = (state: RootState) =>
     state.settings.isModalOpen;
 
-export const isSelectModeSelector = (state: RootState) =>
-    state.settings.isSelectMode;
+export const selectModeSelector = (state: RootState) => ({
+    isSelectMode: state.settings.isSelectMode,
+    selectedIds: state.settings.selectedIds,
+});
 
 export const selectedIdsSelector = (state: RootState) =>
     state.settings.selectedIds;
 
 export const isSelectedIdSelector = (id: string) =>
     createSelector([selectedIdsSelector], (tasks) => tasks?.includes(id));
+
+export const searchSelector = (state: RootState) => state.settings.search;
+export const filtersSelector = (state: RootState) => state.settings.filters;

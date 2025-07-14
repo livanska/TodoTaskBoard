@@ -9,6 +9,10 @@ import Header from "../Header";
 import { ColumnDraggable } from "../../types";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { columnsAllSelector } from "../../redux/columns/selectors";
+import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
+import useModal from "../../hooks/useModal";
+import EntityModal from "../EntityModal";
+import { EntityPayload } from "../EntityModal/types";
 
 const Root = styled.div`
     height: 100vh;
@@ -44,6 +48,8 @@ const ContentWrapper = styled.div`
 const Board: React.FC = () => {
     const columns = useAppSelector(columnsAllSelector());
     const contentRef = useRef<HTMLDivElement>(null);
+    const { modalProps, openModal } = useModal<EntityPayload>();
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -85,18 +91,21 @@ const Board: React.FC = () => {
         });
     }, [dispatch]);
 
-    console.log("Columns", columns);
-
     return (
         <Root>
             <Wrapper>
-                <Header />
+                <Header openModal={openModal} />
                 <ContentWrapper ref={contentRef}>
                     {columns?.map((props) => (
-                        <Column {...props} key={props.id} />
+                        <Column
+                            {...props}
+                            key={props.id}
+                            openModal={openModal}
+                        />
                     ))}
                 </ContentWrapper>
             </Wrapper>
+            <EntityModal {...modalProps} />
         </Root>
     );
 };

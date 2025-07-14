@@ -76,12 +76,11 @@ const Modal: React.FC<Props> = ({
     title = "Modal title",
     formId,
 }) => {
-    const isModalOpen = useAppSelector(isModalOpenSelector);
-    const { closeModal } = useModal();
+    const { closeModal, isOpen } = useModal();
     const modalCloseRef = useClickOutside<HTMLDivElement>(closeModal);
     const modalRoot = document.getElementById("modal");
 
-    if (!isModalOpen || !modalRoot) {
+    if (!isOpen || !modalRoot) {
         return null;
     }
 

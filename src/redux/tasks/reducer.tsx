@@ -2,7 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
     RootState,
     TaskCreatePayload,
+    TaskEditPayload,
     TaskMovePayload,
+    TasksCompletePayload,
+    TasksMovePayload,
     TaskStoreType,
 } from "../types";
 import { getUuid } from "../../utils/getUuid";
@@ -34,6 +37,30 @@ const tasksSlice = createSlice({
         deleteTask: (state, action: PayloadAction<string>) => {
             const taskId = action.payload;
             return state.filter((task) => task.id !== taskId);
+        },
+        deleteTasks: (state, action: PayloadAction<string[]>) => {
+            const taskIds = action.payload;
+            if (taskIds.length)
+                return state.filter((task) => !taskIds.includes(task.id));
+        },
+        editTask: (state, action: PayloadAction<TaskEditPayload>) => {
+            const { id } = action.payload;
+            const index = state.findIndex((task) => task.id === id);
+            if (index !== -1)
+                state[index] = { ...state[index], ...action.payload };
+        },
+        toggleAllTaskComplete: (
+            state,
+            action: PayloadAction<TasksCompletePayload>
+        ) => {
+            const { ids, isComplete } = action.payload;
+            if (ids.length)
+                return state.map((task) => ({
+                    ...task,
+                    isComplete: ids.includes(task.id)
+                        ? isComplete
+                        : task.isComplete,
+                }));
         },
         moveTask: (state, action: PayloadAction<TaskMovePayload>) => {
             console.log(action.payload);
@@ -93,12 +120,56 @@ const tasksSlice = createSlice({
                 movedTask.order = newOrder;
             }
         },
+        moveTasks: (state, action: PayloadAction<TasksMovePayload>) => {
+            const { ids, columnId, isComplete } = action.payload;
+            if (!ids?.length) return;
+
+            const oldColumnIds = new Set<string>();
+            const newColumnTasks = state.filter(
+                (task) => task.columnId === columnId
+            );
+
+            state.forEach((task) => {
+                if (ids.includes(task.id)) {
+                    oldColumnIds.add(task.columnId);
+                    task.columnId = columnId;
+                    task.order = newColumnTasks.length + 1;
+                    task.isComplete = isComplete ?? task.isComplete;
+                }
+            });
+
+            const sortedTasks = state
+                .filter((task) => task.columnId === columnId)
+                .sort((a, b) => a.order - b.order);
+
+            sortedTasks.forEach((task, index) => {
+                task.order = index + 1;
+            });
+
+            oldColumnIds.forEach((columnId) => {
+                const tasksInOldColumn = state
+                    .filter((task) => task.columnId === columnId)
+                    .sort((a, b) => a.order - b.order);
+
+                tasksInOldColumn.forEach((task, index) => {
+                    task.order = index + 1;
+                });
+            });
+        },
     },
 });
 
 export const tasksActions = tasksSlice.actions;
-export const { addTask, toggleTaskComplete, deleteTask, moveTask } =
-    tasksActions;
+export const {
+    addTask,
+    toggleTaskComplete,
+    deleteTask,
+    moveTask,
+    editTask,
+    toggleAllTaskComplete,
+    deleteTasks,
+    moveTasks,
+} = tasksActions;
 
 export const tasksSelector = (state: RootState) => state.tasks;
 

@@ -77,8 +77,6 @@ const Dropdown: React.FC<Props> = ({
                 value={selectedOption?.label}
                 onClick={() => setIsOpen((prev) => !prev)}
             />
-
-            {/* hidden input for submitting the actual value */}
             {selectedOption && (
                 <input type="hidden" name={name} value={selectedOption.value} />
             )}

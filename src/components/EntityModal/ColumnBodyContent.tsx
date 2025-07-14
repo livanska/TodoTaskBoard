@@ -2,33 +2,25 @@ import React from "react";
 import { styled } from "styled-components";
 import COLORS from "../../styles/colors";
 import SPACINGS from "../../styles/spacings";
+import Input from "../Input";
+import { NAME_FIELD, TITLE_FIELD } from "./constants";
+import { ColumnCreatePayload } from "../../redux/types";
 
 type Props = {
-    initial?: string;
+    initial?: ColumnCreatePayload;
 };
-
-const nameField = "name";
-
-const TextArea = styled.textarea`
-    width: 100%;
-    height: 100%;
-    resize: none;
-    border: 1px solid ${COLORS.border};
-    border-radius: ${SPACINGS.xxs};
-    padding: ${SPACINGS.xs};
-`;
 
 const Label = styled.div`
     color: ${COLORS.font};
 `;
 
-const TaskBodyContent: React.FC<Props> = ({ initial }) => {
+const ColumnBodyContent: React.FC<Props> = ({ initial }) => {
     return (
         <>
-            <Label>Task title:</Label>
-            <TextArea defaultValue={initial} name={nameField} />
+            <Label>Column title:</Label>
+            <Input defaultValue={initial?.title} name={TITLE_FIELD} />
         </>
     );
 };
 
-export default TaskBodyContent;
+export default ColumnBodyContent;

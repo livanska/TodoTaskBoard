@@ -8,68 +8,73 @@ import EntityModal from "../EntityModal";
 import { addTask } from "../../redux/tasks/reducer";
 import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
 import { resetSelectedIds, setSelectMode } from "../../redux/settings/reducer";
-import { isSelectModeSelector } from "../../redux/settings/selectors";
+import { selectModeSelector } from "../../redux/settings/selectors";
+import { EntityPayload, ModalEntityProps } from "../EntityModal/types";
+import { EntityType } from "../../types";
+import SelectActionsRow from "./SelectActionsRow";
+import ActionsRow from "./ActionsRow";
+import SPACINGS from "../../styles/spacings";
+import COLORS from "../../styles/colors";
+import Filters from "./Filters";
 
 const Root = styled.div`
-    height: 10rem;
     width: 100%;
     display: flex;
+    flex-direction: column;
+    gap: ${SPACINGS.xs};
 `;
 
-const Wrapper = styled.div``;
+const Row = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: ${SPACINGS.xs};
+`;
 
-const Header: React.FC = () => {
+const Wrapper = styled.div`
+    display: flex;
+    gap: ${SPACINGS.xs};
+`;
+
+const Title = styled.div`
+    display: flex;
+    color: ${COLORS.title};
+    font-size: large;
+    white-space: nowrap;
+`;
+
+type Props = {
+    openModal: (props: ModalEntityProps) => void;
+};
+const Header: React.FC<Props> = ({ openModal }) => {
     const dispatch = useAppDispatch();
-    const isSelectMode = useAppSelector(isSelectModeSelector);
+    const { isSelectMode } = useAppSelector(selectModeSelector);
 
-    const { openModal, modalProps } = useModal<
-        TaskCreatePayload | ColumnCreatePayload
-    >();
-
-    const handleAddAction = useCallback(
-        (payload: TaskCreatePayload | ColumnCreatePayload) => {
-            if (modalProps.entity === "task")
-                dispatch(addTask(payload as TaskCreatePayload));
-            else dispatch(addColumn(payload as ColumnCreatePayload));
-        },
-        [dispatch, modalProps.entity]
+    const handleSelectMode = useCallback(
+        () => dispatch(setSelectMode(!isSelectMode)),
+        [dispatch, isSelectMode]
     );
-
-    const handleSelectMode = useCallback(() => {
-        dispatch(setSelectMode(!isSelectMode));
-        dispatch(resetSelectedIds());
-    }, [dispatch, isSelectMode]);
 
     return (
         <Root>
-            <Wrapper>
-                Table header
-                <Button
-                    title="New task"
-                    onClick={() =>
-                        openModal({
-                            title: "Add new task",
-                            entity: "task",
-                            onActionClick: handleAddAction,
-                        })
-                    }
-                />
-                <Button
-                    title="New column"
-                    onClick={() =>
-                        openModal({
-                            title: "Add new column",
-                            entity: "column",
-                            onActionClick: handleAddAction,
-                        })
-                    }
-                />
-                <Button
-                    title={isSelectMode ? "Remove selection" : "Select Tasks"}
-                    onClick={handleSelectMode}
-                />
-            </Wrapper>
-            <EntityModal {...modalProps} />
+            <Row>
+                <Title>Table header</Title>
+                <Wrapper>
+                    <Filters />
+                    {isSelectMode ? (
+                        <SelectActionsRow
+                            openModal={openModal}
+                            toggleSelectMode={handleSelectMode}
+                        />
+                    ) : (
+                        <ActionsRow openModal={openModal} />
+                    )}
+                </Wrapper>
+            </Row>
+            <Button
+                title={isSelectMode ? "Remove selection" : "Select Tasks"}
+                onClick={handleSelectMode}
+            />
         </Root>
     );
 };

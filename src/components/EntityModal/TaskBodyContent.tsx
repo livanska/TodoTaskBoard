@@ -4,18 +4,14 @@ import TextArea from "../TextArea";
 import Dropdown from "../Dropdown";
 import { useAppSelector } from "../../redux/store";
 import { columnsOptionsSelector } from "../../redux/columns/selectors";
-import { Col, Label, Row } from "./shared";
-import { COLUMN_FIELD, NAME_FIELD } from "./constants";
+import { Col, Label, Row, Wrapper } from "./shared";
+import { COLUMN_FIELD, COMPLETE_FIELD, NAME_FIELD } from "./constants";
+import { TaskCreatePayload } from "../../redux/types";
+import CheckBox from "../CheckBox";
 
 type Props = {
-    initial?: string;
+    initial?: TaskCreatePayload;
 };
-
-const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-`;
 
 const TaskBodyContent: React.FC<Props> = ({ initial }) => {
     const columnOptions = useAppSelector(columnsOptionsSelector);
@@ -28,7 +24,12 @@ const TaskBodyContent: React.FC<Props> = ({ initial }) => {
             </Row>
             <Col>
                 <Label>Task title:</Label>
-                <TextArea defaultValue={initial} name={NAME_FIELD} />
+                <TextArea defaultValue={initial?.name} name={NAME_FIELD} />
+                <CheckBox
+                    defaultChecked={initial?.isComplete ?? false}
+                    name={COMPLETE_FIELD}
+                    defaultValue={undefined}
+                />
             </Col>
         </Wrapper>
     );
