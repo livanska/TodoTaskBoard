@@ -3,7 +3,7 @@ import Modal from "../Modal";
 import { styled } from "styled-components";
 import useModal from "../../hooks/useModal";
 import TaskBodyContent from "./TaskBodyContent";
-import { COLUMN_FIELD, COMPLETE_FIELD, FORM_ID, NAME_FIELD } from "./constants";
+import { COMPLETE_FIELD, FORM_ID } from "./constants";
 import { ModalProps } from "../Modal/types";
 import {
     ColumnCreatePayload,
@@ -33,13 +33,10 @@ const EntityModal = <T,>({
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
 
-            const isComplete =
-                Boolean(formData.get(COMPLETE_FIELD)) ??
-                action !== "changeColumn"
-                    ? false
-                    : null;
+            const isCompleteValue = !!formData.get(COMPLETE_FIELD);
 
-            console.log(isComplete);
+            const isComplete =
+                isCompleteValue || action !== "changeColumn" ? false : null;
 
             onActionClick?.({
                 ...initial,
@@ -54,8 +51,12 @@ const EntityModal = <T,>({
     return (
         <Modal title={title} formId={FORM_ID}>
             <Form onSubmit={handleSubmit} id={FORM_ID}>
-                {entity === "task" && !action ? (
-                    <TaskBodyContent initial={initial as TaskCreatePayload} />
+                {entity === "task" ? (
+                    !action && (
+                        <TaskBodyContent
+                            initial={initial as TaskCreatePayload}
+                        />
+                    )
                 ) : (
                     <ColumnBodyContent
                         initial={initial as ColumnCreatePayload}

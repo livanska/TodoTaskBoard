@@ -17,11 +17,15 @@ const COLORS = {
     primary: "#3082E7",
     primaryHover: "#256FCA",
     primaryActive: "#1E63B8",
+
+    blackTransparent: "#000000CC",
 };
 
 export const GLASS_EFFECT = `backdrop-filter: blur(6px) saturate(103%);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     -webkit-backdrop-filter: blur(6px) saturate(103%);
     background-color: rgba(255, 255, 255, 0.6);`;
+
+export const BOX_SHADOW = `box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);`;
 
 export default COLORS;

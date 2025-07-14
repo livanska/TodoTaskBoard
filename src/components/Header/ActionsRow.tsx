@@ -1,26 +1,10 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 import Button from "../Button";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useAppDispatch } from "../../redux/store";
 import { addColumn } from "../../redux/columns/reducer";
-import useModal from "../../hooks/useModal";
-import EntityModal from "../EntityModal";
-import {
-    addTask,
-    deleteTasks,
-    moveTasks,
-    toggleAllTaskComplete,
-} from "../../redux/tasks/reducer";
-import {
-    ColumnCreatePayload,
-    TaskCreatePayload,
-    TasksMovePayload,
-} from "../../redux/types";
-import { resetSelectedIds, setSelectMode } from "../../redux/settings/reducer";
-import {
-    selectedIdsSelector,
-    selectModeSelector,
-} from "../../redux/settings/selectors";
+import { addTask } from "../../redux/tasks/reducer";
+import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
 import { EntityPayload, ModalEntityProps } from "../EntityModal/types";
 import { EntityType } from "../../types";
 import SPACINGS from "../../styles/spacings";
@@ -29,6 +13,7 @@ const Root = styled.div`
     width: 100%;
     display: flex;
     gap: ${SPACINGS.xs};
+    align-items: center;
 `;
 
 type Props = {

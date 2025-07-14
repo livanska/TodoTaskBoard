@@ -17,12 +17,12 @@ const tasksSlice = createSlice({
     initialState,
     reducers: {
         addTask: (state, action: PayloadAction<TaskCreatePayload>) => {
-            const { columnId, name } = action.payload;
+            const { columnId, name, isComplete } = action.payload;
             state.push({
                 columnId,
                 id: getUuid(),
                 name,
-                isComplete: false,
+                isComplete,
                 order: state.filter((task) => task.columnId === columnId)
                     .length,
             });

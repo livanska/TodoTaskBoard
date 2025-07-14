@@ -1,10 +1,9 @@
 import React from "react";
-import { styled } from "styled-components";
 import TextArea from "../TextArea";
 import Dropdown from "../Dropdown";
 import { useAppSelector } from "../../redux/store";
 import { columnsOptionsSelector } from "../../redux/columns/selectors";
-import { Col, Label, Row, Wrapper } from "./shared";
+import { Col, Label } from "./shared";
 import { COLUMN_FIELD, COMPLETE_FIELD, NAME_FIELD } from "./constants";
 import { TaskCreatePayload } from "../../redux/types";
 import CheckBox from "../CheckBox";
@@ -17,21 +16,27 @@ const TaskBodyContent: React.FC<Props> = ({ initial }) => {
     const columnOptions = useAppSelector(columnsOptionsSelector);
 
     return (
-        <Wrapper>
-            <Row>
-                <Label>Select assignee:</Label>
-                <Dropdown options={columnOptions} name={COLUMN_FIELD} />
-            </Row>
-            <Col>
-                <Label>Task title:</Label>
-                <TextArea defaultValue={initial?.name} name={NAME_FIELD} />
-                <CheckBox
-                    defaultChecked={initial?.isComplete ?? false}
-                    name={COMPLETE_FIELD}
-                    defaultValue={undefined}
+        <Col>
+            <Col noGap>
+                <Label>Assign to column:</Label>
+                <Dropdown
+                    options={columnOptions}
+                    name={COLUMN_FIELD}
+                    initial={initial?.columnId}
                 />
             </Col>
-        </Wrapper>
+            <Col>
+                <Col noGap>
+                    <Label>Task content:</Label>
+                    <TextArea defaultValue={initial?.name} name={NAME_FIELD} />
+                </Col>
+                <CheckBox
+                    defaultChecked={initial?.isComplete}
+                    name={COMPLETE_FIELD}
+                    label="Completed"
+                />
+            </Col>
+        </Col>
     );
 };
 

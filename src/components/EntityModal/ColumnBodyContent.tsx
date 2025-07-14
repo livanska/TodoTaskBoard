@@ -1,25 +1,23 @@
 import React from "react";
-import { styled } from "styled-components";
-import COLORS from "../../styles/colors";
-import SPACINGS from "../../styles/spacings";
 import Input from "../Input";
-import { NAME_FIELD, TITLE_FIELD } from "./constants";
+import { TITLE_FIELD } from "./constants";
 import { ColumnCreatePayload } from "../../redux/types";
+import { Label, Wrapper } from "./shared";
 
 type Props = {
     initial?: ColumnCreatePayload;
 };
 
-const Label = styled.div`
-    color: ${COLORS.font};
-`;
-
 const ColumnBodyContent: React.FC<Props> = ({ initial }) => {
     return (
-        <>
+        <Wrapper>
             <Label>Column title:</Label>
-            <Input defaultValue={initial?.title} name={TITLE_FIELD} />
-        </>
+            <Input
+                width="100%"
+                defaultValue={initial?.title}
+                name={TITLE_FIELD}
+            />
+        </Wrapper>
     );
 };
 

@@ -4,19 +4,18 @@ import COLORS, { GLASS_EFFECT } from "../../styles/colors";
 import Column from "../Column";
 import SPACINGS from "../../styles/spacings";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { columnsSelector, moveColumn } from "../../redux/columns/reducer";
+import { moveColumn } from "../../redux/columns/reducer";
 import Header from "../Header";
 import { ColumnDraggable } from "../../types";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { columnsAllSelector } from "../../redux/columns/selectors";
-import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
 import useModal from "../../hooks/useModal";
 import EntityModal from "../EntityModal";
 import { EntityPayload } from "../EntityModal/types";
 
 const Root = styled.div`
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     background-color: ${COLORS.white};
     padding: ${SPACINGS.xs};
     background: ${COLORS.backgroundGradient};

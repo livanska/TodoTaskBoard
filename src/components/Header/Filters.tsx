@@ -1,53 +1,41 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import Button from "../Button";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { addColumn } from "../../redux/columns/reducer";
-import useModal from "../../hooks/useModal";
-import EntityModal from "../EntityModal";
-import {
-    addTask,
-    deleteTasks,
-    moveTasks,
-    toggleAllTaskComplete,
-} from "../../redux/tasks/reducer";
-import {
-    ColumnCreatePayload,
-    FiltersPayload,
-    TaskCreatePayload,
-    TasksMovePayload,
-} from "../../redux/types";
-import {
-    resetSelectedIds,
-    setFilters,
-    setSearch,
-    setSelectMode,
-} from "../../redux/settings/reducer";
-import {
-    filtersSelector,
-    searchSelector,
-    selectedIdsSelector,
-    selectModeSelector,
-} from "../../redux/settings/selectors";
-import { EntityPayload, ModalEntityProps } from "../EntityModal/types";
-import { EntityType } from "../../types";
+import { setFilters, setSearch } from "../../redux/settings/reducer";
+import { filtersSelector } from "../../redux/settings/selectors";
 import SPACINGS from "../../styles/spacings";
 import Input from "../Input";
 import CheckBox from "../CheckBox";
 import { useDebouncedCallback } from "../../hooks/useDebounce";
+import COLORS from "../../styles/colors";
+import FONT_STYLES from "../../styles/fontStyles";
 
 const Root = styled.div`
-    width: 100%;
     display: flex;
     gap: ${SPACINGS.xs};
+    align-items: center;
+    flex-wrap: wrap;
 `;
 
-const Search = styled(Input)`
-    width: 10rem;
+const FiltersWrapper = styled.div`
+    display: flex;
+    border: 1px solid ${COLORS.border};
+    border-radius: ${SPACINGS.xs};
+    gap: ${SPACINGS.xs};
+    background-color: ${COLORS.white};
+    padding: ${SPACINGS.xxs} ${SPACINGS.xs};
+    height: 100%;
+    align-items: center;
 `;
 
-type Props = {};
-const Filters: React.FC<Props> = ({}) => {
+const Title = styled.div`
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    ${FONT_STYLES.subtitle};
+`;
+
+const Filters: React.FC = () => {
     const dispatch = useAppDispatch();
     const filters = useAppSelector(filtersSelector);
     const [searchValue, setSearchValue] = useState("");
@@ -72,22 +60,31 @@ const Filters: React.FC<Props> = ({}) => {
 
     return (
         <Root>
-            <Search
+            <FiltersWrapper>
+                <Title>Filters:</Title>
+                <CheckBox
+                    label="Show Done"
+                    defaultChecked
+                    checked={filters?.done}
+                    onChange={(e) =>
+                        handleFilterChange("done", e.target.checked)
+                    }
+                />
+                <CheckBox
+                    label="Show Undone"
+                    defaultChecked
+                    checked={filters?.unDone}
+                    onChange={(e) =>
+                        handleFilterChange("unDone", e.target.checked)
+                    }
+                />
+            </FiltersWrapper>
+            <Input
                 type="search"
                 value={searchValue}
+                placeholder="Search tasks..."
                 onChange={(e) => setSearchValue(e.target.value)}
-            />
-            <CheckBox
-                label="Show Done"
-                defaultChecked
-                checked={filters?.done}
-                onChange={(e) => handleFilterChange("done", e.target.checked)}
-            />
-            <CheckBox
-                label="Show Undone"
-                defaultChecked
-                checked={filters?.unDone}
-                onChange={(e) => handleFilterChange("unDone", e.target.checked)}
+                width="15rem"
             />
         </Root>
     );

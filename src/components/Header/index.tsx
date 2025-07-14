@@ -2,26 +2,24 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 import Button from "../Button";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { addColumn } from "../../redux/columns/reducer";
-import useModal from "../../hooks/useModal";
-import EntityModal from "../EntityModal";
-import { addTask } from "../../redux/tasks/reducer";
-import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
-import { resetSelectedIds, setSelectMode } from "../../redux/settings/reducer";
+
+import { setSelectMode } from "../../redux/settings/reducer";
 import { selectModeSelector } from "../../redux/settings/selectors";
-import { EntityPayload, ModalEntityProps } from "../EntityModal/types";
-import { EntityType } from "../../types";
+import { ModalEntityProps } from "../EntityModal/types";
 import SelectActionsRow from "./SelectActionsRow";
 import ActionsRow from "./ActionsRow";
 import SPACINGS from "../../styles/spacings";
-import COLORS from "../../styles/colors";
 import Filters from "./Filters";
+import FONT_STYLES from "../../styles/fontStyles";
 
 const Root = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: ${SPACINGS.xs};
+    padding: ${SPACINGS.sm} 0;
+    align-items: center;
+    flex-wrap: wrap;
 `;
 
 const Row = styled.div`
@@ -29,6 +27,8 @@ const Row = styled.div`
     display: flex;
     justify-content: space-between;
     gap: ${SPACINGS.xs};
+    align-items: center;
+    flex-wrap: wrap;
 `;
 
 const Wrapper = styled.div`
@@ -38,14 +38,21 @@ const Wrapper = styled.div`
 
 const Title = styled.div`
     display: flex;
-    color: ${COLORS.title};
-    font-size: large;
     white-space: nowrap;
+    align-self: flex-start;
+    ${FONT_STYLES.titleXl};
+`;
+
+const SelectionWrapper = styled.div`
+    display: flex;
+    justify-self: end;
+    margin-right: auto;
 `;
 
 type Props = {
     openModal: (props: ModalEntityProps) => void;
 };
+
 const Header: React.FC<Props> = ({ openModal }) => {
     const dispatch = useAppDispatch();
     const { isSelectMode } = useAppSelector(selectModeSelector);
@@ -57,10 +64,20 @@ const Header: React.FC<Props> = ({ openModal }) => {
 
     return (
         <Root>
+            <Title>Table header</Title>
             <Row>
-                <Title>Table header</Title>
+                <Filters />
+                <SelectionWrapper>
+                    <Button
+                        variant="outline"
+                        title={
+                            isSelectMode ? "Remove selection" : "Select Tasks"
+                        }
+                        onClick={handleSelectMode}
+                        style={{ marginLeft: "auto" }}
+                    />
+                </SelectionWrapper>
                 <Wrapper>
-                    <Filters />
                     {isSelectMode ? (
                         <SelectActionsRow
                             openModal={openModal}
@@ -71,10 +88,6 @@ const Header: React.FC<Props> = ({ openModal }) => {
                     )}
                 </Wrapper>
             </Row>
-            <Button
-                title={isSelectMode ? "Remove selection" : "Select Tasks"}
-                onClick={handleSelectMode}
-            />
         </Root>
     );
 };

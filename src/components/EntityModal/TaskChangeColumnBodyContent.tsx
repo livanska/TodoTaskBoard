@@ -1,17 +1,12 @@
-import React, { useCallback } from "react";
-import Modal from "../Modal";
-import { styled } from "styled-components";
-import useModal from "../../hooks/useModal";
-// import TaskBodyContent from "./TaskBodyContent";
-import { COLUMN_FIELD, FORM_ID, NAME_FIELD } from "./constants";
-import { ModalProps } from "../Modal/types";
-import { TaskCreatePayload, TasksMovePayload } from "../../redux/types";
+import React from "react";
+import { COLUMN_FIELD } from "./constants";
+import { TasksMovePayload } from "../../redux/types";
 import { COMPLETE_FIELD } from "./constants";
-import SPACINGS from "../../styles/spacings";
 import Dropdown from "../Dropdown";
-import { Row, Label, Col, Wrapper } from "./shared";
+import { Label, Col, Wrapper } from "./shared";
 import { columnsOptionsSelector } from "../../redux/columns/selectors";
 import { useAppSelector } from "../../redux/store";
+import CheckBox from "../CheckBox";
 
 type Props = {
     initial?: TasksMovePayload;
@@ -22,15 +17,19 @@ const TaskChangeColumnBodyContent: React.FC<Props> = ({ initial }) => {
 
     return (
         <Wrapper>
-            <Row>
-                <Label>Select assignee:</Label>
-                <Dropdown options={columnOptions} name={COLUMN_FIELD} />
-            </Row>
             <Col>
-                <input
-                    type="checkbox"
+                <Col>
+                    <Label>Assign to column:</Label>
+                    <Dropdown
+                        options={columnOptions}
+                        name={COLUMN_FIELD}
+                        initial={initial?.columnId}
+                    />
+                </Col>
+                <CheckBox
+                    defaultChecked={initial?.isComplete}
                     name={COMPLETE_FIELD}
-                    defaultValue={undefined}
+                    label="Set all completed"
                 />
             </Col>
         </Wrapper>

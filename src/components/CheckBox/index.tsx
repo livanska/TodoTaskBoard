@@ -2,6 +2,7 @@ import styled from "styled-components";
 import COLORS from "../../styles/colors";
 import SPACINGS from "../../styles/spacings";
 import { useState } from "react";
+import FONT_STYLES from "../../styles/fontStyles";
 
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label?: string;
@@ -38,11 +39,12 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
 const Label = styled.label`
     display: inline-flex;
     align-items: center;
-    gap: ${SPACINGS.xs};
+    gap: ${SPACINGS.xxs};
     cursor: pointer;
     user-select: none;
     position: relative;
     white-space: nowrap;
+    ${FONT_STYLES.label}
 `;
 
 const CheckBox: React.FC<Props> = ({ label, ...inputProps }) => {

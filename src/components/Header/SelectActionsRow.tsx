@@ -2,26 +2,15 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 import Button from "../Button";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { addColumn } from "../../redux/columns/reducer";
-import useModal from "../../hooks/useModal";
-import EntityModal from "../EntityModal";
 import {
-    addTask,
     deleteTasks,
     moveTasks,
     toggleAllTaskComplete,
 } from "../../redux/tasks/reducer";
-import {
-    ColumnCreatePayload,
-    TaskCreatePayload,
-    TasksMovePayload,
-} from "../../redux/types";
-import { resetSelectedIds, setSelectMode } from "../../redux/settings/reducer";
-import {
-    selectedIdsSelector,
-    selectModeSelector,
-} from "../../redux/settings/selectors";
-import { EntityPayload, ModalEntityProps } from "../EntityModal/types";
+import { TasksMovePayload } from "../../redux/types";
+
+import { selectModeSelector } from "../../redux/settings/selectors";
+import { ModalEntityProps } from "../EntityModal/types";
 import SPACINGS from "../../styles/spacings";
 
 const Root = styled.div`
@@ -57,7 +46,7 @@ const SelectActionsRow: React.FC<Props> = ({ openModal, toggleSelectMode }) => {
 
     const handleAllChangeColumn = useCallback(() => {
         openModal({
-            entity: "column",
+            entity: "task",
             action: "changeColumn",
             onActionClick: (props) => {
                 const { columnId, isComplete } = props as TasksMovePayload;

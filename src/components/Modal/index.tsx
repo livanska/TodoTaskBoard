@@ -3,12 +3,13 @@ import ReactDOM from "react-dom";
 import { styled } from "styled-components";
 import COLORS from "../../styles/colors";
 import SPACINGS from "../../styles/spacings";
-import { isModalOpenSelector } from "../../redux/settings/selectors";
-import { useAppSelector } from "../../redux/store";
+
 import useModal from "../../hooks/useModal";
 import Icon from "../Icon";
 import useClickOutside from "../../hooks/useClickOutside";
 import Button from "../Button";
+import { forMobile } from "../../styles/media";
+import FONT_STYLES from "../../styles/fontStyles";
 
 type Props = {
     children?: React.ReactNode;
@@ -30,8 +31,19 @@ const Overlay = styled.div`
 `;
 
 const Body = styled.div`
-    min-height: 20rem;
-    min-width: 30rem;
+    max-height: 24rem;
+    max-width: 30rem;
+
+    min-height: 10rem;
+    min-width: 20rem;
+
+    ${forMobile(`
+        max-height: 40%;
+        max-width: 80%;
+        min-height: 20%;
+        min-width: 60%;
+   `)}
+
     background-color: ${COLORS.white};
     align-self: center;
     border-radius: ${SPACINGS.xs};
@@ -60,6 +72,7 @@ const Title = styled.div`
     display: flex;
     justify-content: start;
     align-items: center;
+    ${FONT_STYLES.title};
 `;
 
 const Content = styled.div`
@@ -71,11 +84,7 @@ const Content = styled.div`
     position: relative;
 `;
 
-const Modal: React.FC<Props> = ({
-    children,
-    title = "Modal title",
-    formId,
-}) => {
+const Modal: React.FC<Props> = ({ children, title = "", formId }) => {
     const { closeModal, isOpen } = useModal();
     const modalCloseRef = useClickOutside<HTMLDivElement>(closeModal);
     const modalRoot = document.getElementById("modal");
@@ -93,7 +102,11 @@ const Modal: React.FC<Props> = ({
                 <Title>{title}</Title>
                 <Content>{children}</Content>
                 <Footer>
-                    <Button title="Cancel" onClick={closeModal} />
+                    <Button
+                        title="Cancel"
+                        onClick={closeModal}
+                        variant="outline"
+                    />
                     <Button form={formId} title="Save" type="submit" />
                 </Footer>
             </Body>

@@ -5,10 +5,15 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { tasksByColumnIdSelector } from "../../redux/tasks/selectors";
 import { addTask, editTask, moveTask } from "../../redux/tasks/reducer";
 import SPACINGS from "../../styles/spacings";
-import { ColumnStoreType, TaskEditPayload } from "../../redux/types";
+import {
+    ColumnEditPayload,
+    ColumnStoreType,
+    TaskCreatePayload,
+    TaskEditPayload,
+} from "../../redux/types";
 import Task from "../Task";
 import Icon from "../Icon";
-import { deleteColumn } from "../../redux/columns/reducer";
+import { deleteColumn, editColumn } from "../../redux/columns/reducer";
 import {
     draggable,
     dropTargetForElements,
@@ -22,6 +27,7 @@ import {
 import { setSelectedIds } from "../../redux/settings/reducer";
 import { ModalEntityProps } from "../EntityModal/types";
 import { matchSearch } from "../../utils/searchText";
+import FONT_STYLES from "../../styles/fontStyles";
 
 const Root = styled.div`
     display: flex;
@@ -41,7 +47,7 @@ const List = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${SPACINGS.xs};
-    padding: ${SPACINGS.sm};
+    padding: 0 ${SPACINGS.sm} ${SPACINGS.sm};
     overflow-y: scroll;
     height: 100%;
     width: 100%;
@@ -52,10 +58,11 @@ const Title = styled.div`
     width: 100%;
     justify-content: center;
     padding-left: ${SPACINGS.xs};
+    ${FONT_STYLES.subtitle};
 `;
 
 const Header = styled.div`
-    padding: ${SPACINGS.sm} ${SPACINGS.sm};
+    padding: ${SPACINGS.sm} ${SPACINGS.sm} ${SPACINGS.xs};
     color: ${COLORS.title};
     font-weight: bold;
     display: flex;
@@ -64,19 +71,27 @@ const Header = styled.div`
     align-self: center;
 `;
 
-const Row = styled.div`
+const Row = styled.div<{ alignEnd?: boolean }>`
     display: flex;
     gap: ${SPACINGS.xs};
-    justify-content: end;
+    justify-content: space-between;
     align-items: center;
+    ${FONT_STYLES.subtitle}
+    ${({ alignEnd }) => alignEnd && ` align-self: flex-end;`}
 `;
 
 const DragIconWrapper = styled.div<{ isSelectMode?: boolean }>`
     display: flex;
-    align-items: center;
+    align-self: start;
     cursor: pointer;
     margin-right: ${SPACINGS.sm};
-    ${({ isSelectMode }) => isSelectMode && `visibility: hidden;`}
+    ${({ isSelectMode }) => isSelectMode && `display: none;`}
+`;
+
+const Col = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 `;
 
 type Props = {
@@ -88,8 +103,6 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
     const search = useAppSelector(searchSelector);
     const tasks = useAppSelector(tasksByColumnIdSelector(id));
     const { isSelectMode } = useAppSelector(selectModeSelector);
-
-    console.log(tasks);
     const dispatch = useAppDispatch();
 
     const handleDeleteColumn = useCallback(
@@ -99,13 +112,14 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
 
     const handleAddTask = useCallback(
         () =>
-            dispatch(
-                addTask({
-                    columnId: id,
-                    name: "New task",
-                })
-            ),
-        [dispatch, id]
+            openModal({
+                entity: "task",
+                initial: { columnId: id },
+                onActionClick: (props) =>
+                    dispatch(addTask(props as TaskCreatePayload)),
+                title: "Add task",
+            }),
+        [dispatch, id, openModal]
     );
 
     const handleTaskSelections = useCallback(
@@ -193,6 +207,16 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
         });
     }, [filters, tasks, search]);
 
+    const handleColumnEdit = useCallback(() => {
+        openModal({
+            entity: "column",
+            initial: { id, title },
+            onActionClick: (props) =>
+                dispatch(editColumn(props as ColumnEditPayload)),
+            title: "Update column",
+        });
+    }, [dispatch, id, openModal, title]);
+
     const handleTaskEdit = useCallback(
         (task: TaskEditPayload) => {
             openModal({
@@ -209,31 +233,52 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
     return (
         <Root ref={columnRef} data-column-id={id}>
             <Header>
-                <DragIconWrapper
-                    ref={columnIconRef}
-                    isSelectMode={isSelectMode}
-                >
-                    <Icon name="drag" />
-                </DragIconWrapper>
-                <Title>{title}</Title>
-                <Row>
-                    <Icon
-                        name={isSelectMode ? "select" : "add"}
-                        onClick={
-                            !isSelectMode
-                                ? handleAddTask
-                                : () => handleTaskSelections(true)
-                        }
-                    />
-                    <Icon
-                        name={isSelectMode ? "unselect" : "delete"}
-                        onClick={
-                            !isSelectMode
-                                ? handleDeleteColumn
-                                : () => handleTaskSelections(false)
-                        }
-                    />
-                </Row>
+                <Col>
+                    <Row alignEnd={isSelectMode}>
+                        <DragIconWrapper
+                            ref={columnIconRef}
+                            isSelectMode={isSelectMode}
+                        >
+                            <Icon name="drag" tooltip="Drag to reorder" />
+                        </DragIconWrapper>
+                        <Row>
+                            {!isSelectMode && (
+                                <Icon
+                                    name="edit"
+                                    onClick={handleColumnEdit}
+                                    tooltip="Edit column"
+                                />
+                            )}
+                            <Icon
+                                name={isSelectMode ? "select" : "add"}
+                                tooltip={
+                                    isSelectMode
+                                        ? "Select all tasks"
+                                        : "Add new task"
+                                }
+                                onClick={
+                                    !isSelectMode
+                                        ? handleAddTask
+                                        : () => handleTaskSelections(true)
+                                }
+                            />
+                            <Icon
+                                name={isSelectMode ? "unselect" : "delete"}
+                                onClick={
+                                    !isSelectMode
+                                        ? handleDeleteColumn
+                                        : () => handleTaskSelections(false)
+                                }
+                                tooltip={
+                                    isSelectMode
+                                        ? "Unselect all tasks"
+                                        : "Delete column"
+                                }
+                            />
+                        </Row>
+                    </Row>
+                    <Title>{title}</Title>
+                </Col>
             </Header>
             <List>
                 {filteredTasks?.map((props) => (

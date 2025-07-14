@@ -20,6 +20,7 @@ export type TasksCompletePayload = {
 };
 
 export type ColumnCreatePayload = Pick<ColumnStoreType, "title">;
+export type ColumnEditPayload = Pick<ColumnStoreType, "title" | "id">;
 
 export type TaskMovePayload = Pick<
     TaskStoreType,

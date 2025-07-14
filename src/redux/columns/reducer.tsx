@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
     ColumnCreatePayload,
+    ColumnEditPayload,
     ColumnMovePayload,
     ColumnStoreType,
     RootState,
@@ -25,6 +26,11 @@ const columnsSlice = createSlice({
             const columnId = action.payload;
             return state.filter(({ id }) => id !== columnId);
         },
+        editColumn: (state, action: PayloadAction<ColumnEditPayload>) => {
+            const { id, title } = action.payload;
+            const column = state.find((col) => col.id === id);
+            if (column) column.title = title;
+        },
         moveColumn: (state, action: PayloadAction<ColumnMovePayload>) => {
             const { id, newOrder } = action.payload;
 
@@ -45,7 +51,8 @@ const columnsSlice = createSlice({
 });
 
 export const columnsActions = columnsSlice.actions;
-export const { addColumn, deleteColumn, moveColumn } = columnsActions;
+export const { addColumn, deleteColumn, moveColumn, editColumn } =
+    columnsActions;
 
 export const columnsSelector = (state: RootState) => state.columns;
 

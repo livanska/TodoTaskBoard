@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import COLORS from "../../styles/colors";
 import SPACINGS from "../../styles/spacings";
+import FONT_STYLES from "../../styles/fontStyles";
 
 export const Label = styled.div`
-    color: ${COLORS.font};
+    ${FONT_STYLES.label}
 `;
 
 export const Row = styled.div`
@@ -14,14 +14,14 @@ export const Row = styled.div`
     gap: ${SPACINGS.xs};
 `;
 
-export const Col = styled.div`
+export const Col = styled.div<{ noGap?: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
     flex-grow: 1;
     height: 100%;
-    gap: ${SPACINGS.xs};
+    gap: ${({ noGap }) => (noGap ? 0 : SPACINGS.xs)};
 `;
 
 export const Wrapper = styled.div`

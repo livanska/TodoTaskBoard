@@ -10,6 +10,8 @@ import {
     AiOutlineDrag,
     AiFillCheckCircle,
     AiFillCloseCircle,
+    AiOutlineCaretDown,
+    AiOutlineCaretUp,
 } from "react-icons/ai";
 
 export const ICON_TYPES = {
@@ -24,6 +26,8 @@ export const ICON_TYPES = {
     drag: AiOutlineDrag,
     select: AiFillCheckCircle,
     unselect: AiFillCloseCircle,
+    down: AiOutlineCaretDown,
+    up: AiOutlineCaretUp,
 };
 
 export type IconName = keyof typeof ICON_TYPES;
