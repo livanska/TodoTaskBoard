@@ -13,3 +13,13 @@ export const Row = styled.div`
     width: 100%;
     gap: ${SPACINGS.xs};
 `;
+
+export const Col = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    flex-grow: 1;
+    height: 100%;
+    gap: ${SPACINGS.xs};
+`;

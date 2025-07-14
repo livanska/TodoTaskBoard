@@ -8,6 +8,8 @@ import {
     AiOutlineMinusCircle,
     AiOutlineDelete,
     AiOutlineDrag,
+    AiFillCheckCircle,
+    AiFillCloseCircle,
 } from "react-icons/ai";
 
 export const ICON_TYPES = {
@@ -20,6 +22,8 @@ export const ICON_TYPES = {
     done: AiOutlineCheckCircle,
     delete: AiOutlineDelete,
     drag: AiOutlineDrag,
+    select: AiFillCheckCircle,
+    unselect: AiFillCloseCircle,
 };
 
 export type IconName = keyof typeof ICON_TYPES;

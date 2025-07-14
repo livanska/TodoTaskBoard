@@ -25,7 +25,14 @@ export type ColumnMovePayload = Pick<ColumnStoreType, "id" | "order"> & {
     newOrder: number;
 };
 
+export type SetSelectedIdsPayload = {
+    ids: string[];
+    isSelected: boolean;
+};
+
 export type SettingsStoreType = {
     name?: string;
+    isSelectMode?: boolean;
     isModalOpen: boolean;
+    selectedIds?: string[];
 };

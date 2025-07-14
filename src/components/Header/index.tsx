@@ -1,12 +1,14 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 import Button from "../Button";
-import { useAppDispatch } from "../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { addColumn } from "../../redux/columns/reducer";
 import useModal from "../../hooks/useModal";
 import EntityModal from "../EntityModal";
 import { addTask } from "../../redux/tasks/reducer";
 import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
+import { resetSelectedIds, setSelectMode } from "../../redux/settings/reducer";
+import { isSelectModeSelector } from "../../redux/settings/selectors";
 
 const Root = styled.div`
     height: 10rem;
@@ -18,6 +20,8 @@ const Wrapper = styled.div``;
 
 const Header: React.FC = () => {
     const dispatch = useAppDispatch();
+    const isSelectMode = useAppSelector(isSelectModeSelector);
+
     const { openModal, modalProps } = useModal<
         TaskCreatePayload | ColumnCreatePayload
     >();
@@ -31,6 +35,11 @@ const Header: React.FC = () => {
         [dispatch, modalProps.entity]
     );
 
+    const handleSelectMode = useCallback(() => {
+        dispatch(setSelectMode(!isSelectMode));
+        dispatch(resetSelectedIds());
+    }, [dispatch, isSelectMode]);
+
     return (
         <Root>
             <Wrapper>
@@ -39,9 +48,8 @@ const Header: React.FC = () => {
                     title="New task"
                     onClick={() =>
                         openModal({
-                            title: "New task",
+                            title: "Add new task",
                             entity: "task",
-                            initial: "New task",
                             onActionClick: handleAddAction,
                         })
                     }
@@ -50,10 +58,15 @@ const Header: React.FC = () => {
                     title="New column"
                     onClick={() =>
                         openModal({
+                            title: "Add new column",
                             entity: "column",
                             onActionClick: handleAddAction,
                         })
                     }
+                />
+                <Button
+                    title={isSelectMode ? "Remove selection" : "Select Tasks"}
+                    onClick={handleSelectMode}
                 />
             </Wrapper>
             <EntityModal {...modalProps} />

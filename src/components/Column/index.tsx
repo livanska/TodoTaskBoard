@@ -14,6 +14,8 @@ import {
     dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { ColumnDraggable, TaskDraggable } from "../../types";
+import { isSelectModeSelector } from "../../redux/settings/selectors";
+import { setSelectedIds } from "../../redux/settings/reducer";
 
 const Root = styled.div`
     display: flex;
@@ -43,7 +45,7 @@ const Title = styled.div`
     display: flex;
     width: 100%;
     justify-content: center;
-    padding-left: ${SPACINGS.sm};
+    padding-left: ${SPACINGS.xs};
 `;
 
 const Header = styled.div`
@@ -52,7 +54,7 @@ const Header = styled.div`
     font-weight: bold;
     display: flex;
     width: 100%;
-    justify-content: space-around;
+    justify-content: space-between;
     align-self: center;
 `;
 
@@ -63,16 +65,18 @@ const Row = styled.div`
     align-items: center;
 `;
 
-const DragIconWrapper = styled.div`
-    position: "absolute";
-    height: 100%;
+const DragIconWrapper = styled.div<{ isSelectMode?: boolean }>`
     display: flex;
     align-items: center;
     cursor: pointer;
+    margin-right: ${SPACINGS.sm};
+    ${({ isSelectMode }) => isSelectMode && `visibility: hidden;`}
 `;
 
 const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
     const tasks = useAppSelector(tasksByColumnIdSelector(id));
+    const isSelectMode = useAppSelector(isSelectModeSelector);
+
     const dispatch = useAppDispatch();
 
     const handleDeleteColumn = useCallback(
@@ -85,11 +89,22 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
         [dispatch, id]
     );
 
+    const handleTskSelections = useCallback(
+        (isSelected: boolean) =>
+            dispatch(
+                setSelectedIds({
+                    ids: tasks.map((task) => task.id),
+                    isSelected,
+                })
+            ),
+        [dispatch, tasks]
+    );
+
     const columnRef = useRef<HTMLDivElement>(null);
     const columnIconRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!columnRef.current) return;
+        if (!columnRef.current || !isSelectMode) return;
 
         return dropTargetForElements({
             element: columnRef.current,
@@ -131,10 +146,10 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
                 );
             },
         });
-    }, [dispatch, id]);
+    }, [dispatch, id, isSelectMode]);
 
     useEffect(() => {
-        if (!columnRef.current) return;
+        if (!columnRef.current || !isSelectMode) return;
 
         return draggable({
             element: columnRef.current,
@@ -146,18 +161,35 @@ const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
                     order,
                 } as ColumnDraggable),
         });
-    }, [id, order]);
+    }, [id, isSelectMode, order]);
 
     return (
         <Root ref={columnRef} data-column-id={id}>
             <Header>
-                <DragIconWrapper ref={columnIconRef}>
+                <DragIconWrapper
+                    ref={columnIconRef}
+                    isSelectMode={isSelectMode}
+                >
                     <Icon name="drag" />
                 </DragIconWrapper>
                 <Title>{title}</Title>
                 <Row>
-                    <Icon name="add" onClick={handleAddTask} />
-                    <Icon name="delete" onClick={handleDeleteColumn} />
+                    <Icon
+                        name={isSelectMode ? "select" : "add"}
+                        onClick={
+                            !isSelectMode
+                                ? handleAddTask
+                                : () => handleTskSelections(true)
+                        }
+                    />
+                    <Icon
+                        name={isSelectMode ? "unselect" : "delete"}
+                        onClick={
+                            !isSelectMode
+                                ? handleDeleteColumn
+                                : () => handleTskSelections(false)
+                        }
+                    />
                 </Row>
             </Header>
             <List>
