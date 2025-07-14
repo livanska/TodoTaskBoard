@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import COLORS, { GLASS_EFFECT } from "../../styles/colors";
 import { TaskStoreType } from "../../redux/types";
@@ -6,6 +6,8 @@ import { useAppDispatch } from "../../redux/store";
 import { deleteTask, toggleTaskComplete } from "../../redux/tasks/reducer";
 import Icon from "../Icon";
 import SPACINGS from "../../styles/spacings";
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { TaskDraggable } from "../../types";
 
 const Root = styled.div<{ isComplete: boolean }>`
     display: flex;
@@ -58,6 +60,7 @@ const Task: React.FC<TaskStoreType> = ({
     name,
     order,
 }) => {
+    const taskRef = useRef<HTMLDivElement>(null);
     const dispatch = useAppDispatch();
 
     const handleStatusChange = useCallback(
@@ -70,10 +73,25 @@ const Task: React.FC<TaskStoreType> = ({
         [dispatch, id]
     );
 
+    useEffect(() => {
+        if (!taskRef.current) return;
+
+        return draggable({
+            element: taskRef.current,
+            getInitialData: () =>
+                ({
+                    type: "task",
+                    taskId: id,
+                    fromColumnId: columnId,
+                    order,
+                } as TaskDraggable),
+        });
+    }, [id, columnId, order]);
+
     const statusName = isComplete ? "Done" : "Not done";
 
     return (
-        <Root isComplete={isComplete}>
+        <Root isComplete={isComplete} ref={taskRef} data-task-id={id}>
             <Header>
                 <StatusLabel isComplete={isComplete}>
                     <Icon name={isComplete ? "done" : "notDone"} />

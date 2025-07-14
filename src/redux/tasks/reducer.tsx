@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState, TaskCreatePayload, TaskStoreType } from "../types";
+import {
+    RootState,
+    TaskCreatePayload,
+    TaskMovePayload,
+    TaskStoreType,
+} from "../types";
 import { getUuid } from "../../utils/getUuid";
 
 const initialState: TaskStoreType[] = [];
@@ -15,7 +20,8 @@ const tasksSlice = createSlice({
                 id: getUuid(),
                 name,
                 isComplete: false,
-                order: 0,
+                order: state.filter((task) => task.columnId === columnId)
+                    .length,
             });
         },
         toggleTaskComplete: (state, action: PayloadAction<string>) => {
@@ -29,11 +35,70 @@ const tasksSlice = createSlice({
             const taskId = action.payload;
             return state.filter((task) => task.id !== taskId);
         },
+        moveTask: (state, action: PayloadAction<TaskMovePayload>) => {
+            console.log(action.payload);
+            const { id, newColumnId, columnId, newOrder } = action.payload;
+
+            const movedTask = state.find((task) => task.id === id);
+            if (!movedTask) return;
+
+            if (columnId === newColumnId) {
+                // Moving within the same column: reorder tasks inside the column
+
+                // Get all tasks in the column sorted by order, excluding the moved task
+                const tasksInColumn = state
+                    .filter((t) => t.columnId === columnId && t.id !== id)
+                    .sort((a, b) => a.order - b.order);
+
+                // Insert the moved task at newOrder position (1-based)
+                const insertIndex =
+                    typeof newOrder === "number" && newOrder >= 1
+                        ? Math.min(newOrder - 1, tasksInColumn.length)
+                        : tasksInColumn.length;
+
+                tasksInColumn.splice(insertIndex, 0, movedTask);
+
+                // Re-assign orders sequentially
+                tasksInColumn.forEach((task, index) => {
+                    task.order = index + 1;
+                });
+
+                // Update the moved task's order
+                movedTask.order = insertIndex + 1;
+            } else {
+                const oldColumnTasks = state
+                    .filter((t) => t.columnId === columnId && t.id !== id)
+                    .sort((a, b) => a.order - b.order);
+
+                oldColumnTasks.forEach((task, idx) => {
+                    task.order = idx + 1;
+                });
+
+                const newColumnTasks = state
+                    .filter((t) => t.columnId === newColumnId)
+                    .sort((a, b) => a.order - b.order);
+
+                const insertIndex = Math.min(
+                    Math.max((newOrder ?? newColumnTasks.length + 1) - 1, 0),
+                    newColumnTasks.length
+                );
+
+                newColumnTasks.splice(insertIndex, 0, movedTask);
+
+                newColumnTasks.forEach((task, idx) => {
+                    task.order = idx + 1;
+                });
+
+                movedTask.columnId = newColumnId;
+                movedTask.order = newOrder;
+            }
+        },
     },
 });
 
 export const tasksActions = tasksSlice.actions;
-export const { addTask, toggleTaskComplete, deleteTask } = tasksActions;
+export const { addTask, toggleTaskComplete, deleteTask, moveTask } =
+    tasksActions;
 
 export const tasksSelector = (state: RootState) => state.tasks;
 

@@ -1,14 +1,19 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import COLORS from "../../styles/colors";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { tasksByColumnIdSelector } from "../../redux/tasks/selectors";
-import { addTask } from "../../redux/tasks/reducer";
+import { addTask, moveTask } from "../../redux/tasks/reducer";
 import SPACINGS from "../../styles/spacings";
 import { ColumnStoreType } from "../../redux/types";
 import Task from "../Task";
 import Icon from "../Icon";
 import { deleteColumn } from "../../redux/columns/reducer";
+import {
+    draggable,
+    dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { ColumnDraggable, TaskDraggable } from "../../types";
 
 const Root = styled.div`
     display: flex;
@@ -38,6 +43,7 @@ const Title = styled.div`
     display: flex;
     width: 100%;
     justify-content: center;
+    padding-left: ${SPACINGS.sm};
 `;
 
 const Header = styled.div`
@@ -50,7 +56,22 @@ const Header = styled.div`
     align-self: center;
 `;
 
-const Column: React.FC<ColumnStoreType> = ({ id, title }) => {
+const Row = styled.div`
+    display: flex;
+    gap: ${SPACINGS.xs};
+    justify-content: end;
+    align-items: center;
+`;
+
+const DragIconWrapper = styled.div`
+    position: "absolute";
+    height: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+`;
+
+const Column: React.FC<ColumnStoreType> = ({ id, title, order }) => {
     const tasks = useAppSelector(tasksByColumnIdSelector(id));
     const dispatch = useAppDispatch();
 
@@ -64,12 +85,80 @@ const Column: React.FC<ColumnStoreType> = ({ id, title }) => {
         [dispatch, id]
     );
 
+    const columnRef = useRef<HTMLDivElement>(null);
+    const columnIconRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!columnRef.current) return;
+
+        return dropTargetForElements({
+            element: columnRef.current,
+            canDrop: ({ source }) => source.data?.type === "task",
+            onDrop: ({ source, location }) => {
+                const columnEl = columnRef.current;
+                if (!columnEl || !source.data) return;
+
+                const { order, taskId, fromColumnId } =
+                    source.data as TaskDraggable;
+
+                const taskElements = Array.from(
+                    columnEl.querySelectorAll<HTMLElement>("[data-task-id]")
+                );
+                let newOrder = taskElements.length + 1;
+
+                const dropY = location.current.input.clientY;
+
+                const beforeTask = taskElements.find((el) => {
+                    const taskContainer = el.getBoundingClientRect();
+                    return dropY < taskContainer.top + taskContainer.height / 2;
+                });
+
+                if (beforeTask) {
+                    const index = taskElements.findIndex(
+                        (el) => el.dataset.taskId === beforeTask.dataset.taskId
+                    );
+                    newOrder = index + 1;
+                }
+
+                dispatch(
+                    moveTask({
+                        id: taskId,
+                        columnId: fromColumnId,
+                        newColumnId: id,
+                        order,
+                        newOrder,
+                    })
+                );
+            },
+        });
+    }, [dispatch, id]);
+
+    useEffect(() => {
+        if (!columnRef.current) return;
+
+        return draggable({
+            element: columnRef.current,
+            ...(columnIconRef.current && { dragHandle: columnIconRef.current }),
+            getInitialData: () =>
+                ({
+                    type: "column",
+                    columnId: id,
+                    order,
+                } as ColumnDraggable),
+        });
+    }, [id, order]);
+
     return (
-        <Root>
+        <Root ref={columnRef} data-column-id={id}>
             <Header>
-                <Icon name="add" onClick={handleAddTask} />
+                <DragIconWrapper ref={columnIconRef}>
+                    <Icon name="drag" />
+                </DragIconWrapper>
                 <Title>{title}</Title>
-                <Icon name="delete" onClick={handleDeleteColumn} />
+                <Row>
+                    <Icon name="add" onClick={handleAddTask} />
+                    <Icon name="delete" onClick={handleDeleteColumn} />
+                </Row>
             </Header>
             <List>
                 {tasks?.map((props) => (

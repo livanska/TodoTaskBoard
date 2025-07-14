@@ -7,11 +7,11 @@ export const convertToStoreType = (
     let allTasks: TaskStoreType[] = [];
     console.log(board);
 
-    const columns = board?.columns?.map(({ id, title, tasks }) => {
+    const columns = board?.columns?.map(({ id, title, tasks, order }) => {
         allTasks.push(
             ...tasks.map((task) => ({ ...task, columnId: id, id: task.id }))
         );
-        return { id, title };
+        return { id, title, order };
     });
 
     console.log(allTasks, columns);

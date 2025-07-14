@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import COLORS, { GLASS_EFFECT } from "../../styles/colors";
 import Column from "../Column";
 import SPACINGS from "../../styles/spacings";
-import { useAppSelector } from "../../redux/store";
-import { columnsSelector } from "../../redux/columns/reducer";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { columnsSelector, moveColumn } from "../../redux/columns/reducer";
 import Header from "../Header";
+import { ColumnDraggable } from "../../types";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { columnsAllSelector } from "../../redux/columns/selectors";
 
 const Root = styled.div`
     height: 100vh;
@@ -39,13 +42,56 @@ const ContentWrapper = styled.div`
 `;
 
 const Board: React.FC = () => {
-    const columns = useAppSelector(columnsSelector);
+    const columns = useAppSelector(columnsAllSelector());
+    const contentRef = useRef<HTMLDivElement>(null);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!contentRef.current) return;
+
+        return dropTargetForElements({
+            element: contentRef.current,
+            canDrop: ({ source }) => source.data?.type === "column",
+            onDrop: ({ source, location }) => {
+                const columnEl = contentRef.current;
+                if (!columnEl || !source.data) return;
+                const { order, columnId } = source.data as ColumnDraggable;
+                const taskElements = Array.from(
+                    columnEl.querySelectorAll<HTMLElement>("[data-column-id]")
+                );
+                let newOrder = taskElements.length + 1;
+                const dropX = location.current.input.clientX;
+                const beforeTask = taskElements.find((el) => {
+                    const taskContainer = el.getBoundingClientRect();
+                    return dropX < taskContainer.left + taskContainer.width / 2;
+                });
+                if (beforeTask) {
+                    const index = taskElements.findIndex(
+                        (el) =>
+                            el.dataset.columnId === beforeTask.dataset.columnId
+                    );
+                    newOrder = index + 1;
+                }
+                console.log("Move column", { columnId, order, newOrder });
+
+                dispatch(
+                    moveColumn({
+                        id: columnId,
+                        order,
+                        newOrder,
+                    })
+                );
+            },
+        });
+    }, [dispatch]);
+
+    console.log("Columns", columns);
 
     return (
         <Root>
             <Wrapper>
                 <Header />
-                <ContentWrapper>
+                <ContentWrapper ref={contentRef}>
                     {columns?.map((props) => (
                         <Column {...props} key={props.id} />
                     ))}

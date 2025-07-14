@@ -3,6 +3,7 @@
     "columns": [
         {
             "title": "Liliia",
+            "order": 1,
             "tasks": [
                 {
                     "name": "Implement drag and drop feature",
@@ -23,6 +24,7 @@
         },
         {
             "title": "Mariia",
+            "order": 2,
             "tasks": [
                 {
                     "name": "Add card creation functionality",
@@ -38,6 +40,7 @@
         },
         {
             "title": "Pavlo",
+            "order": 3,
             "tasks": [
                 {
                     "name": "Add column creation functionality",

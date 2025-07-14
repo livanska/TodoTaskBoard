@@ -13,6 +13,18 @@ export type ColumnStoreType = Omit<Column, "tasks">;
 export type TaskCreatePayload = Pick<TaskStoreType, "name" | "columnId">;
 export type ColumnCreatePayload = Pick<ColumnStoreType, "title">;
 
+export type TaskMovePayload = Pick<
+    TaskStoreType,
+    "id" | "columnId" | "order"
+> & {
+    newColumnId: string;
+    newOrder: number;
+};
+
+export type ColumnMovePayload = Pick<ColumnStoreType, "id" | "order"> & {
+    newOrder: number;
+};
+
 export type SettingsStoreType = {
     name?: string;
     isModalOpen: boolean;
