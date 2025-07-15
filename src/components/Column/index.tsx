@@ -215,7 +215,7 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
             initial: { id, title },
             onActionClick: (props) =>
                 dispatch(editColumn(props as ColumnEditPayload)),
-            title: "Update column",
+            title: "Edit column",
         });
     }, [dispatch, id, openModal, title]);
 
@@ -226,7 +226,7 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
                 initial: task,
                 onActionClick: (props) =>
                     dispatch(editTask(props as TaskEditPayload)),
-                title: "Update task",
+                title: "Edit task",
             });
         },
         [dispatch, openModal]

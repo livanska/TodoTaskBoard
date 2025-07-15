@@ -78,7 +78,7 @@ const Header: React.FC<Props> = ({ openModal }) => {
                         disabled={!hasColumns}
                         variant="outline"
                         title={
-                            isSelectMode ? "Remove selection" : "Select Tasks"
+                            isSelectMode ? "Remove selection" : "Select tasks"
                         }
                         onClick={handleSelectMode}
                         style={{ marginLeft: "auto" }}

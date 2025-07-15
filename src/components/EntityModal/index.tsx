@@ -35,14 +35,15 @@ const EntityModal = <T,>({
             const formData = new FormData(event.currentTarget);
 
             const isCompleteValue = !!formData.get(COMPLETE_FIELD);
+            let isComplete: boolean | null = isCompleteValue;
 
-            const isComplete =
-                isCompleteValue || action !== "changeColumn" ? false : null;
+            if (action === "changeColumn" && !isCompleteValue)
+                isComplete = null;
 
             onActionClick?.({
                 ...initial,
                 ...Object.fromEntries(formData.entries()),
-                ...(isComplete !== null && { isComplete: isComplete }),
+                ...(isComplete !== null && { isComplete }),
             } as T);
             closeModal();
         },
