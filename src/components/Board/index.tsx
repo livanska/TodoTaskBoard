@@ -1,0 +1,131 @@
+import React, { useEffect, useRef } from "react";
+import styled from "styled-components";
+import COLORS, { GLASS_EFFECT } from "../../styles/colors";
+import Column from "../Column";
+import SPACINGS from "../../styles/spacings";
+import {
+    hydrateStoreFromLocalStorage,
+    useAppDispatch,
+    useAppSelector,
+} from "../../redux/store";
+import { moveColumn } from "../../redux/columns/reducer";
+import Header from "../Header";
+import { ColumnDraggable } from "../../types";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { columnsAllSelector } from "../../redux/columns/selectors";
+import useModal from "../../hooks/useModal";
+import EntityModal from "../EntityModal";
+import { EntityPayload } from "../EntityModal/types";
+import { useTrackFirstVisit } from "../../hooks/useIsFirstVisit";
+import { setBoardName } from "../../redux/settings/reducer";
+import { BoardCreatePayload } from "../../redux/types";
+import { getMockedData } from "../../mock/getMockedData";
+import { saveToLocalState } from "../../utils/localStorage";
+
+const Root = styled.div`
+    height: 100%;
+    width: 100%;
+    background-color: ${COLORS.white};
+    padding: ${SPACINGS.xs};
+    background: ${COLORS.backgroundGradient};
+    padding: ${SPACINGS.xs};
+`;
+
+const Wrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    border-radius: ${SPACINGS.sm};
+    padding: ${SPACINGS.xs};
+    overflow: hidden;
+    border-radius: ${SPACINGS.sm};
+    border: 1px solid ${COLORS.border};
+    ${GLASS_EFFECT};
+`;
+
+const ContentWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: ${SPACINGS.sm};
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+`;
+
+const Board: React.FC = () => {
+    const columns = useAppSelector(columnsAllSelector());
+    const contentRef = useRef<HTMLDivElement>(null);
+    const { modalProps, openModal } = useModal<EntityPayload>();
+    const dispatch = useAppDispatch();
+
+    useTrackFirstVisit(() =>
+        openModal({
+            entity: "board",
+            onActionClick: (props) => {
+                const { name, loadExampleData } = props as BoardCreatePayload;
+                loadExampleData && saveToLocalState(getMockedData());
+                dispatch(hydrateStoreFromLocalStorage());
+                dispatch(setBoardName(name));
+            },
+        })
+    );
+
+    useEffect(() => {
+        if (!contentRef.current) return;
+
+        return dropTargetForElements({
+            element: contentRef.current,
+            canDrop: ({ source }) => source.data?.type === "column",
+            onDrop: ({ source, location }) => {
+                const columnEl = contentRef.current;
+                if (!columnEl || !source.data) return;
+                const { order, columnId } = source.data as ColumnDraggable;
+                const taskElements = Array.from(
+                    columnEl.querySelectorAll<HTMLElement>("[data-column-id]")
+                );
+                let newOrder = taskElements.length + 1;
+                const dropX = location.current.input.clientX;
+                const beforeTask = taskElements.find((el) => {
+                    const taskContainer = el.getBoundingClientRect();
+                    return dropX < taskContainer.left + taskContainer.width / 2;
+                });
+                if (beforeTask) {
+                    const index = taskElements.findIndex(
+                        (el) =>
+                            el.dataset.columnId === beforeTask.dataset.columnId
+                    );
+                    newOrder = index + 1;
+                }
+
+                dispatch(
+                    moveColumn({
+                        id: columnId,
+                        order,
+                        newOrder,
+                    })
+                );
+            },
+        });
+    }, [dispatch]);
+
+    return (
+        <Root>
+            <Wrapper>
+                <Header openModal={openModal} />
+                <ContentWrapper ref={contentRef}>
+                    {columns?.map((props) => (
+                        <Column
+                            {...props}
+                            key={props.id}
+                            openModal={openModal}
+                        />
+                    ))}
+                </ContentWrapper>
+            </Wrapper>
+            <EntityModal {...modalProps} />
+        </Root>
+    );
+};
+
+export default Board;
