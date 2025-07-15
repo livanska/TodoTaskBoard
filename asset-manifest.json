@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/livanska/TodoTaskBoard/static/css/main.30d93aeb.css",
+    "main.js": "/livanska/TodoTaskBoard/static/js/main.aee53b77.js",
+    "index.html": "/livanska/TodoTaskBoard/index.html",
+    "main.30d93aeb.css.map": "/livanska/TodoTaskBoard/static/css/main.30d93aeb.css.map",
+    "main.aee53b77.js.map": "/livanska/TodoTaskBoard/static/js/main.aee53b77.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.30d93aeb.css",
+    "static/js/main.aee53b77.js"
+  ]
+}
