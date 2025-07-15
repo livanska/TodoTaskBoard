@@ -15,7 +15,7 @@ const TextAreaRoot = styled.textarea`
 `;
 
 const TextArea: React.FC<Props> = (props) => {
-    return <TextAreaRoot maxLength={300} {...props} />;
+    return <TextAreaRoot required maxLength={300} {...props} />;
 };
 
 export default TextArea;
