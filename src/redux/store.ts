@@ -6,23 +6,19 @@ import {
 } from "@reduxjs/toolkit";
 import tasksReducer, { tasksActions } from "./tasks/reducer";
 import columnsReducer, { columnsActions } from "./columns/reducer";
-import settingsReducer from "./settings/reducer";
-import {
-    existInLocalStorage,
-    loadLocalState,
-    saveToLocalState,
-} from "../utils/localStorage";
+import settingsReducer, {
+    setBoardName,
+    settingsActions,
+} from "./settings/reducer";
+import { loadLocalState, saveToLocalState } from "../utils/localStorage";
 import {
     convertFromStoreType,
     convertToStoreType,
 } from "../utils/convertBoardData";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { AppDispatch, RootState, AppStore } from "./types";
-import { getMockedData } from "../mock/getMockedData";
 
-const preloadedState = convertToStoreType(
-    existInLocalStorage() ? loadLocalState() : getMockedData()
-);
+const preloadedState = convertToStoreType(loadLocalState());
 
 export const rootReducer = combineReducers({
     settings: settingsReducer,
@@ -32,6 +28,7 @@ export const rootReducer = combineReducers({
 
 const listener = createListenerMiddleware();
 const matchingActions = [
+    setBoardName,
     ...(Object.values(tasksActions) as Array<
         (typeof tasksActions)[keyof typeof tasksActions]
     >),
@@ -55,6 +52,17 @@ export const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().prepend(listener.middleware),
 });
+
+export const hydrateStoreFromLocalStorage = () => (dispatch: AppDispatch) => {
+    const rawState = loadLocalState();
+    if (!rawState) return;
+
+    const converted = convertToStoreType(rawState);
+
+    dispatch(settingsActions.setEntireState(converted.settings));
+    dispatch(tasksActions.setEntireState(converted.tasks));
+    dispatch(columnsActions.setEntireState(converted.columns));
+};
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();

@@ -9,3 +9,6 @@ export const columnsAllSelector = () =>
 
 export const columnsOptionsSelector = (state: RootState) =>
     state.columns?.map(({ id, title }) => ({ value: id, label: title }));
+
+export const hasColumnsSelector = (state: RootState) =>
+    state.columns?.length > 0;

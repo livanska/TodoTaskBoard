@@ -17,6 +17,7 @@ const Root = styled.div`
     width: 100%;
     display: flex;
     gap: ${SPACINGS.xs};
+    flex-wrap: wrap;
 `;
 
 type Props = {
@@ -50,7 +51,6 @@ const SelectActionsRow: React.FC<Props> = ({ openModal, toggleSelectMode }) => {
             action: "changeColumn",
             onActionClick: (props) => {
                 const { columnId, isComplete } = props as TasksMovePayload;
-                console.log("Moving tasks to column", props, selectedIds);
                 columnId &&
                     dispatch(
                         moveTasks({

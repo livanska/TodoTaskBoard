@@ -13,7 +13,7 @@ export type Column = {
 };
 
 export type Board = {
-    name?: string;
+    name: string;
     columns: Column[];
 };
 

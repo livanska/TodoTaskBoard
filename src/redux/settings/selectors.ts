@@ -17,3 +17,5 @@ export const isSelectedIdSelector = (id: string) =>
 
 export const searchSelector = (state: RootState) => state.settings.search;
 export const filtersSelector = (state: RootState) => state.settings.filters;
+
+export const boardNameSelector = (state: RootState) => state.settings.name;

@@ -3,6 +3,7 @@ import { getUuid } from "../utils/getUuid";
 import mockedData from "./board.json";
 
 export const getMockedData = (): Board => ({
+    name: mockedData.name,
     columns: mockedData.columns?.map((column) => ({
         ...column,
         id: getUuid(),

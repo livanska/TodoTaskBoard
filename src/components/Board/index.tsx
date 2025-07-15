@@ -3,7 +3,11 @@ import styled from "styled-components";
 import COLORS, { GLASS_EFFECT } from "../../styles/colors";
 import Column from "../Column";
 import SPACINGS from "../../styles/spacings";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import {
+    hydrateStoreFromLocalStorage,
+    useAppDispatch,
+    useAppSelector,
+} from "../../redux/store";
 import { moveColumn } from "../../redux/columns/reducer";
 import Header from "../Header";
 import { ColumnDraggable } from "../../types";
@@ -12,6 +16,11 @@ import { columnsAllSelector } from "../../redux/columns/selectors";
 import useModal from "../../hooks/useModal";
 import EntityModal from "../EntityModal";
 import { EntityPayload } from "../EntityModal/types";
+import { useTrackFirstVisit } from "../../hooks/useIsFirstVisit";
+import { setBoardName } from "../../redux/settings/reducer";
+import { BoardCreatePayload } from "../../redux/types";
+import { getMockedData } from "../../mock/getMockedData";
+import { saveToLocalState } from "../../utils/localStorage";
 
 const Root = styled.div`
     height: 100%;
@@ -48,8 +57,19 @@ const Board: React.FC = () => {
     const columns = useAppSelector(columnsAllSelector());
     const contentRef = useRef<HTMLDivElement>(null);
     const { modalProps, openModal } = useModal<EntityPayload>();
-
     const dispatch = useAppDispatch();
+
+    useTrackFirstVisit(() =>
+        openModal({
+            entity: "board",
+            onActionClick: (props) => {
+                const { name, loadExampleData } = props as BoardCreatePayload;
+                loadExampleData && saveToLocalState(getMockedData());
+                dispatch(hydrateStoreFromLocalStorage());
+                dispatch(setBoardName(name));
+            },
+        })
+    );
 
     useEffect(() => {
         if (!contentRef.current) return;
@@ -77,7 +97,6 @@ const Board: React.FC = () => {
                     );
                     newOrder = index + 1;
                 }
-                console.log("Move column", { columnId, order, newOrder });
 
                 dispatch(
                     moveColumn({

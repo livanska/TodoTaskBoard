@@ -1,13 +1,14 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 import Button from "../Button";
-import { useAppDispatch } from "../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { addColumn } from "../../redux/columns/reducer";
 import { addTask } from "../../redux/tasks/reducer";
 import { ColumnCreatePayload, TaskCreatePayload } from "../../redux/types";
 import { EntityPayload, ModalEntityProps } from "../EntityModal/types";
 import { EntityType } from "../../types";
 import SPACINGS from "../../styles/spacings";
+import { hasColumnsSelector } from "../../redux/columns/selectors";
 
 const Root = styled.div`
     width: 100%;
@@ -20,6 +21,7 @@ type Props = {
     openModal: (props: ModalEntityProps) => void;
 };
 const ActionsRow: React.FC<Props> = ({ openModal }) => {
+    const hasColumns = useAppSelector(hasColumnsSelector);
     const dispatch = useAppDispatch();
 
     const handleAddAction = useCallback(
@@ -34,6 +36,7 @@ const ActionsRow: React.FC<Props> = ({ openModal }) => {
     return (
         <Root>
             <Button
+                disabled={!hasColumns}
                 title="New task"
                 onClick={() =>
                     openModal({

@@ -4,13 +4,17 @@ import Button from "../Button";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 import { setSelectMode } from "../../redux/settings/reducer";
-import { selectModeSelector } from "../../redux/settings/selectors";
+import {
+    boardNameSelector,
+    selectModeSelector,
+} from "../../redux/settings/selectors";
 import { ModalEntityProps } from "../EntityModal/types";
 import SelectActionsRow from "./SelectActionsRow";
 import ActionsRow from "./ActionsRow";
 import SPACINGS from "../../styles/spacings";
 import Filters from "./Filters";
 import FONT_STYLES from "../../styles/fontStyles";
+import { hasColumnsSelector } from "../../redux/columns/selectors";
 
 const Root = styled.div`
     width: 100%;
@@ -56,6 +60,8 @@ type Props = {
 const Header: React.FC<Props> = ({ openModal }) => {
     const dispatch = useAppDispatch();
     const { isSelectMode } = useAppSelector(selectModeSelector);
+    const title = useAppSelector(boardNameSelector);
+    const hasColumns = useAppSelector(hasColumnsSelector);
 
     const handleSelectMode = useCallback(
         () => dispatch(setSelectMode(!isSelectMode)),
@@ -64,11 +70,12 @@ const Header: React.FC<Props> = ({ openModal }) => {
 
     return (
         <Root>
-            <Title>Table header</Title>
+            <Title>{title}</Title>
             <Row>
                 <Filters />
                 <SelectionWrapper>
                     <Button
+                        disabled={!hasColumns}
                         variant="outline"
                         title={
                             isSelectMode ? "Remove selection" : "Select Tasks"

@@ -12,6 +12,7 @@ import {
 } from "../../redux/types";
 import ColumnBodyContent from "./ColumnBodyContent";
 import TaskChangeColumnBodyContent from "./TaskChangeColumnBodyContent";
+import BoardBodyContent from "./BoardBodyContent";
 
 const Form = styled.form`
     display: flex;
@@ -49,19 +50,17 @@ const EntityModal = <T,>({
     );
 
     return (
-        <Modal title={title} formId={FORM_ID}>
+        <Modal title={title} formId={FORM_ID} hideCancel={entity === "board"}>
             <Form onSubmit={handleSubmit} id={FORM_ID}>
-                {entity === "task" ? (
-                    !action && (
-                        <TaskBodyContent
-                            initial={initial as TaskCreatePayload}
-                        />
-                    )
-                ) : (
+                {entity === "task" && !action && (
+                    <TaskBodyContent initial={initial as TaskCreatePayload} />
+                )}
+                {entity === "column" && (
                     <ColumnBodyContent
                         initial={initial as ColumnCreatePayload}
                     />
                 )}
+                {entity === "board" && <BoardBodyContent />}
                 {action === "changeColumn" && (
                     <TaskChangeColumnBodyContent
                         initial={initial as TasksMovePayload}

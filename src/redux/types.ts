@@ -1,4 +1,4 @@
-import { Column, Task } from "../types";
+import { Board, Column, Task } from "../types";
 import { rootReducer, store } from "./store";
 
 export type AppStore = typeof store;
@@ -51,10 +51,14 @@ export type FiltersPayload = {
 };
 
 export type SettingsStoreType = {
-    name?: string;
+    name: string;
     isSelectMode?: boolean;
-    isModalOpen: boolean;
+    isModalOpen?: boolean;
     selectedIds?: string[];
     search?: string;
     filters?: FiltersPayload;
+};
+
+export type BoardCreatePayload = Pick<Board, "name"> & {
+    loadExampleData?: boolean;
 };

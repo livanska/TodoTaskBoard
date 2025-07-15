@@ -101,7 +101,7 @@ type Props = {
 const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
     const filters = useAppSelector(filtersSelector);
     const search = useAppSelector(searchSelector);
-    const tasks = useAppSelector(tasksByColumnIdSelector(id));
+    const tasks = useAppSelector((s) => tasksByColumnIdSelector(s, id));
     const { isSelectMode } = useAppSelector(selectModeSelector);
     const dispatch = useAppDispatch();
 
@@ -198,13 +198,15 @@ const Column: React.FC<Props> = ({ id, title, order, openModal }) => {
 
     const filteredTasks = useMemo(() => {
         if (filters?.done && filters?.unDone && !search) return tasks;
-        return tasks.filter(({ isComplete, name }) => {
+        const selectedTasks = tasks.filter(({ isComplete, name }) => {
             const statusMatch =
-                (filters?.done && isComplete) ||
-                (filters?.unDone && !isComplete);
-            if (search) return statusMatch && matchSearch(name, search);
+                !filters ||
+                (filters.done && isComplete) ||
+                (filters.unDone && !isComplete);
+            if (!!search) return statusMatch && matchSearch(name, search);
             return statusMatch;
         });
+        return selectedTasks.sort((a, b) => a.order - b.order);
     }, [filters, tasks, search]);
 
     const handleColumnEdit = useCallback(() => {

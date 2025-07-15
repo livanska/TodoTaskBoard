@@ -16,7 +16,7 @@ const TaskBodyContent: React.FC<Props> = ({ initial }) => {
     const columnOptions = useAppSelector(columnsOptionsSelector);
 
     return (
-        <Col>
+        <Col noGap={false}>
             <Col noGap>
                 <Label>Assign to column:</Label>
                 <Dropdown

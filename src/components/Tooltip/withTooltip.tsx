@@ -10,7 +10,7 @@ type Position = {
     y: number;
 };
 
-const Root = styled.div`
+const TriggerRoot = styled.div`
     display: "inline-flex";
     position: "relative";
 `;
@@ -61,7 +61,7 @@ export const withTooltip =
 
         const hideTooltip = () => {
             if (hideTimeout.current) return;
-            // Add a small delay before hiding, helps avoid flicker
+
             hideTimeout.current = window.setTimeout(() => {
                 setVisible(false);
                 hideTimeout.current = null;
@@ -146,10 +146,8 @@ export const withTooltip =
         }, [visible]);
 
         return (
-            <>
-                <Root ref={triggerRef}>
-                    <Component {...props} />
-                </Root>
+            <TriggerRoot>
+                <Component {...props} ref={triggerRef} />
                 {visible &&
                     ReactDOM.createPortal(
                         <TooltipContent
@@ -161,6 +159,6 @@ export const withTooltip =
                         </TooltipContent>,
                         document.body
                     )}
-            </>
+            </TriggerRoot>
         );
     };

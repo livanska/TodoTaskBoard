@@ -33,7 +33,7 @@ const useModal = <T,>(): ModalReturnProps<T> => {
     }, [dispatch]);
 
     return {
-        isOpen: isModalOpenFromStore,
+        isOpen: !!isModalOpenFromStore,
         modalProps,
         openModal,
         closeModal,

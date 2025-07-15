@@ -4,6 +4,7 @@ import {
     TaskEditPayload,
     TasksMovePayload,
     ColumnEditPayload,
+    BoardCreatePayload,
 } from "../../redux/types";
 import { ModalProps } from "../Modal/types";
 
@@ -12,6 +13,7 @@ export type EntityPayload =
     | ColumnEditPayload
     | TaskCreatePayload
     | TaskEditPayload
-    | TasksMovePayload;
+    | TasksMovePayload
+    | BoardCreatePayload;
 
 export type ModalEntityProps = ModalProps<EntityPayload>;

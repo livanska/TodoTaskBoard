@@ -1,9 +1,6 @@
-import { createSelector } from "@reduxjs/toolkit";
-import { tasksSelector } from "./reducer";
+import { RootState } from "../types";
 
-export const tasksByColumnIdSelector = (columnId: string) =>
-    createSelector([tasksSelector], (tasks) =>
-        tasks
-            .filter((task) => task.columnId === columnId)
-            .sort((a, b) => a.order - b.order)
-    );
+export const tasksByColumnIdSelector = (state: RootState, columnId: string) =>
+    state.tasks
+        .filter((task) => task.columnId === columnId)
+        .sort((a, b) => a.order - b.order);

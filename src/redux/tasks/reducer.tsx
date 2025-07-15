@@ -16,6 +16,9 @@ const tasksSlice = createSlice({
     name: "tasks",
     initialState,
     reducers: {
+        setEntireState: (_, action: PayloadAction<TaskStoreType[]>) => {
+            return action.payload;
+        },
         addTask: (state, action: PayloadAction<TaskCreatePayload>) => {
             const { columnId, name, isComplete } = action.payload;
             state.push({
@@ -63,7 +66,6 @@ const tasksSlice = createSlice({
                 }));
         },
         moveTask: (state, action: PayloadAction<TaskMovePayload>) => {
-            console.log(action.payload);
             const { id, newColumnId, columnId, newOrder } = action.payload;
 
             const movedTask = state.find((task) => task.id === id);

@@ -7,6 +7,7 @@ import {
 } from "../types";
 
 const initialState: SettingsStoreType = {
+    name: "",
     isModalOpen: false,
     isSelectMode: false,
     selectedIds: [],
@@ -17,6 +18,9 @@ const settingsSlice = createSlice({
     name: "settings",
     initialState,
     reducers: {
+        setEntireState: (_, action: PayloadAction<SettingsStoreType>) => {
+            return action.payload;
+        },
         setIsModalOpen: (state, action: PayloadAction<boolean>) => {
             state.isModalOpen = action.payload;
         },
@@ -44,9 +48,13 @@ const settingsSlice = createSlice({
         setFilters: (state, action: PayloadAction<FiltersPayload>) => {
             state.filters = action.payload;
         },
+        setBoardName: (state, action: PayloadAction<string>) => {
+            state.name = action.payload;
+        },
     },
 });
 
+export const settingsActions = settingsSlice.actions;
 export const {
     setIsModalOpen,
     setSelectMode,
@@ -54,7 +62,8 @@ export const {
     resetSelectedIds,
     setSearch,
     setFilters,
-} = settingsSlice.actions;
+    setBoardName,
+} = settingsActions;
 
 export const settingsSelector = (state: RootState) => state.settings;
 

@@ -13,7 +13,10 @@ type Props = {
     variant?: ButtonVariant;
 } & ButtonProps;
 
-const ButtonRoot = styled.button<{ variant: ButtonVariant }>`
+const ButtonRoot = styled.button<{
+    variant: ButtonVariant;
+    disabled?: boolean;
+}>`
     display: flex;
     width: fit-content;
     height: fit-content;
@@ -51,6 +54,8 @@ const ButtonRoot = styled.button<{ variant: ButtonVariant }>`
                       background-color: ${COLORS.primary}20;
                   }
               `}
+
+     ${({ disabled }) => disabled && `opacity: 0.5; pointer-events: none;  `}
 `;
 
 const Button: React.FC<Props> = ({ variant = "primary", title, ...props }) => {

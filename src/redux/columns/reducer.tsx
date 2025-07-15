@@ -14,6 +14,9 @@ const columnsSlice = createSlice({
     name: "columns",
     initialState,
     reducers: {
+        setEntireState: (_, action: PayloadAction<ColumnStoreType[]>) => {
+            return action.payload;
+        },
         addColumn: (state, action: PayloadAction<ColumnCreatePayload>) => {
             const { title } = action.payload;
             state.push({

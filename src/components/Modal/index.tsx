@@ -15,6 +15,7 @@ type Props = {
     children?: React.ReactNode;
     title?: string;
     formId?: string;
+    hideCancel?: boolean;
 };
 
 const Overlay = styled.div`
@@ -38,7 +39,7 @@ const Body = styled.div`
     min-width: 20rem;
 
     ${forMobile(`
-        max-height: 40%;
+        max-height: 80%;
         max-width: 80%;
         min-height: 20%;
         min-width: 60%;
@@ -84,9 +85,16 @@ const Content = styled.div`
     position: relative;
 `;
 
-const Modal: React.FC<Props> = ({ children, title = "", formId }) => {
+const Modal: React.FC<Props> = ({
+    children,
+    title = "",
+    formId,
+    hideCancel = false,
+}) => {
     const { closeModal, isOpen } = useModal();
-    const modalCloseRef = useClickOutside<HTMLDivElement>(closeModal);
+    const modalCloseRef = useClickOutside<HTMLDivElement>(
+        () => !hideCancel && closeModal()
+    );
     const modalRoot = document.getElementById("modal");
 
     if (!isOpen || !modalRoot) {
@@ -96,17 +104,22 @@ const Modal: React.FC<Props> = ({ children, title = "", formId }) => {
     return ReactDOM.createPortal(
         <Overlay>
             <Body ref={modalCloseRef}>
-                <IconWrapper>
-                    <Icon name="close" onClick={closeModal} />
-                </IconWrapper>
+                {!hideCancel && (
+                    <IconWrapper>
+                        <Icon name="close" onClick={closeModal} />
+                    </IconWrapper>
+                )}
                 <Title>{title}</Title>
                 <Content>{children}</Content>
+
                 <Footer>
-                    <Button
-                        title="Cancel"
-                        onClick={closeModal}
-                        variant="outline"
-                    />
+                    {!hideCancel && (
+                        <Button
+                            title="Cancel"
+                            onClick={closeModal}
+                            variant="outline"
+                        />
+                    )}
                     <Button form={formId} title="Save" type="submit" />
                 </Footer>
             </Body>
